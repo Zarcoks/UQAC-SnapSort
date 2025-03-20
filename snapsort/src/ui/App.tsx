@@ -5,6 +5,17 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
+  const [images, setImages] = useState([]);
+  const [folderPath, setFolderPath] = useState('');
+
+  const openFolder = async () => {
+      const result  = await (window as any).electron.openDirectory();
+      if (result) {
+        setFolderPath(result.folderPath);
+        setImages(result.files);
+      }
+  };
+
   return (
     <>
       <div>
@@ -17,13 +28,21 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div>
+      <button onClick={openFolder}>Ouvrir un dossier</button>
+      {folderPath && <h2>Dossier sélectionné : {folderPath}</h2>}
+      <div className="gallery">
+        {images.map((image, index) => (
+          <img
+            key={index}
+            src={`file://${folderPath}/${image}`}
+            alt={image}
+            style={{ width: '200px', margin: '10px' }}
+          />
+        ))}
+      </div>
+    </div>
     </>
   )
 }

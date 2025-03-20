@@ -2,9 +2,9 @@
     "appId": "com.snapsport-company.snapsport",
     "files": [
       "dist-electron",
-      "dist-react",
-      "src/python/**/*"],
-    "extraResources": ["dist-electron/preload.cjs", "src/assets/**"],
+      "dist-react"],
+    "asarUnpack":"scripts/**",
+    "extraResources": ["dist-electron/preload.cjs", "src/assets/**", "scripts/**"],
     "icon": "./logo.png",
     "mac": {
       "target": "dmg"

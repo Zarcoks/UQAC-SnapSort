@@ -2,7 +2,7 @@ import {app, BrowserWindow, dialog, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { isDev } from './util.js';
-import { getPreloadPath } from './pathResolver.js';
+import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
 import { spawn } from 'child_process';
 
 let mainWindow: BrowserWindow | null = null;
@@ -51,7 +51,7 @@ ipcMain.handle('open-directory', async () => {
 // Execute Python Script Handler
 ipcMain.handle('run-python', async () => {
   return new Promise((resolve, reject) => {
-    const pythonScript = path.join(app.getAppPath(), '/src/python/hello.py'); // Ensure script.py exists
+    const pythonScript = getPythonScriptPath('hello.py');
 
     const pythonProcess = spawn('python', [pythonScript]);
 

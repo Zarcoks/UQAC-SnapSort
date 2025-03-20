@@ -4,9 +4,9 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
   const [images, setImages] = useState([]);
   const [folderPath, setFolderPath] = useState('');
+  const [pythonOutput, setPythonOutput] = useState<string>('');
 
   const openFolder = async () => {
       const result  = await (window as any).electron.openDirectory();
@@ -14,6 +14,15 @@ function App() {
         setFolderPath(result.folderPath);
         setImages(result.files);
       }
+  };
+
+  const runPythonScript = async () => {
+    try {
+      const output = await (window as any).electron.runPython();
+      setPythonOutput(output);
+    } catch (error) {
+      setPythonOutput(`Error: ${error}`);
+    }
   };
 
   return (
@@ -42,6 +51,10 @@ function App() {
           />
         ))}
       </div>
+    </div>
+    <div>
+      <button onClick={runPythonScript}>Run Python Script</button>
+      {pythonOutput && <p>Python Output: {pythonOutput}</p>}
     </div>
     </>
   )

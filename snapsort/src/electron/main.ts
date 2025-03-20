@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { isDev } from './util.js';
 import { getPreloadPath } from './pathResolver.js';
+import { spawn } from 'child_process';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -12,6 +13,7 @@ app.on('ready', () => {
     height: 600,
     webPreferences: {
       nodeIntegration: false,
+      webSecurity: false,
       preload: getPreloadPath(),
     },
     frame: true
@@ -46,3 +48,30 @@ ipcMain.handle('open-directory', async () => {
   return null;
 });
 
+// Execute Python Script Handler
+ipcMain.handle('run-python', async () => {
+  return new Promise((resolve, reject) => {
+    const pythonScript = path.join(app.getAppPath(), '/src/python/hello.py'); // Ensure script.py exists
+
+    const pythonProcess = spawn('python', [pythonScript]);
+
+    let output = '';
+    let error = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve(output.trim());
+      } else {
+        reject(`Python error: ${error.trim()}`);
+      }
+    });
+  });
+});

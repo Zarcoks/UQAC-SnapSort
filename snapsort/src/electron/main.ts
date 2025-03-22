@@ -4,13 +4,14 @@ import fs from 'fs';
 import { isDev } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
 import { spawn } from 'child_process';
+import store from "./store.js";
 
 let mainWindow: BrowserWindow | null = null;
 
 app.on('ready', () => {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1400,
+    height: 900,
     webPreferences: {
       nodeIntegration: false,
       webSecurity: false,
@@ -74,4 +75,29 @@ ipcMain.handle('run-python', async () => {
       }
     });
   });
+});
+
+// Settings Handler
+
+// Récupérer une valeur du store
+ipcMain.handle("get-setting", (_, key) => {
+  return store.get(key);
+});
+
+// Enregistrer une valeur dans le store
+ipcMain.handle("set-setting", (_, key, value) => {
+  store.set(key, value);
+});
+
+// Ouvrir un explorateur pour sélectionner un dossier
+ipcMain.handle("select-directory", async () => {
+  const result = await dialog.showOpenDialog(mainWindow!, {
+    properties: ["openDirectory"],
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    store.set("directoryPath", result.filePaths[0]);
+    return result.filePaths[0];
+  }
+  return null;
 });

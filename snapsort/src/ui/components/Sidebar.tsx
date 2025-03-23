@@ -50,7 +50,7 @@ const Sidebar = () => {
           <NavBarItem
             label="Images non triées"
             imageUrl={iconUnsortedImages}
-            redirectTo="/untagged-images"
+            redirectTo="/unsorted-images"
           />
           <NavBarItem
             label="Connexion"

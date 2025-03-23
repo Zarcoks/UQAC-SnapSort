@@ -33,49 +33,49 @@ app.on('ready', () => {
 });
 
 // Fonction pour ouvrir un dossier
-ipcMain.handle('open-directory', async () => {
-  const result = await dialog.showOpenDialog(mainWindow!, {
-    properties: ['openDirectory'],
-  });
+// ipcMain.handle('open-directory', async () => {
+//   const result = await dialog.showOpenDialog(mainWindow!, {
+//     properties: ['openDirectory'],
+//   });
 
-  if (!result.canceled && result.filePaths.length > 0) {
-    const folderPath = result.filePaths[0];
-    const files = fs.readdirSync(folderPath).filter(file => {
-      const ext = path.extname(file).toLowerCase();
-      return ['.jpg', '.jpeg', '.png', '.gif'].includes(ext);
-    });
-    return { folderPath, files };
-  }
-  return null;
-});
+//   if (!result.canceled && result.filePaths.length > 0) {
+//     const folderPath = result.filePaths[0];
+//     const files = fs.readdirSync(folderPath).filter(file => {
+//       const ext = path.extname(file).toLowerCase();
+//       return ['.jpg', '.jpeg', '.png', '.gif'].includes(ext);
+//     });
+//     return { folderPath, files };
+//   }
+//   return null;
+// });
 
-// Execute Python Script Handler
-ipcMain.handle('run-python', async () => {
-  return new Promise((resolve, reject) => {
-    const pythonScript = getPythonScriptPath('hello.py');
+// // Execute Python Script Handler
+// ipcMain.handle('run-python', async () => {
+//   return new Promise((resolve, reject) => {
+//     const pythonScript = getPythonScriptPath('hello.py');
 
-    const pythonProcess = spawn('python', [pythonScript]);
+//     const pythonProcess = spawn('python', [pythonScript]);
 
-    let output = '';
-    let error = '';
+//     let output = '';
+//     let error = '';
 
-    pythonProcess.stdout.on('data', (data) => {
-      output += data.toString();
-    });
+//     pythonProcess.stdout.on('data', (data) => {
+//       output += data.toString();
+//     });
 
-    pythonProcess.stderr.on('data', (data) => {
-      error += data.toString();
-    });
+//     pythonProcess.stderr.on('data', (data) => {
+//       error += data.toString();
+//     });
 
-    pythonProcess.on('close', (code) => {
-      if (code === 0) {
-        resolve(output.trim());
-      } else {
-        reject(`Python error: ${error.trim()}`);
-      }
-    });
-  });
-});
+//     pythonProcess.on('close', (code) => {
+//       if (code === 0) {
+//         resolve(output.trim());
+//       } else {
+//         reject(`Python error: ${error.trim()}`);
+//       }
+//     });
+//   });
+// });
 
 // Settings Handler
 
@@ -100,4 +100,27 @@ ipcMain.handle("select-directory", async () => {
     return result.filePaths[0];
   }
   return null;
+});
+
+// Unsorted Images Handler
+
+// Fonction pour récupèrer les fichiers médias
+ipcMain.handle("get-media-files", async (_, directoryPath) => {
+  // Si aucun chemin n'est fourni, utiliser celui du store comme fallback
+  const folderPath = directoryPath || store.get("directoryPath") as string;
+  
+  if (!folderPath) return { error: "No directory path set" };
+
+  try {
+    const files = fs.readdirSync(folderPath)
+      .filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return [".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi"].includes(ext);
+      })
+      .map(file => path.join(folderPath, file)); // Convert to full path
+
+    return { directoryPath: folderPath, files };
+  } catch (error) {
+    return { error: `Failed to read directory: ${error}` };
+  }
 });

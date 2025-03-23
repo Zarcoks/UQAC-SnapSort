@@ -1,16 +1,11 @@
 /* MainLayout.css */
 .app-container {
     display: flex;
-    /* flex-grow: 1; /* Pour qu'il remplisse tout l'espace disponible */
-    /* width: 100%; Pour occuper toute la largeur */ 
-    display: flex;
-    overflow: hidden;
   }
   
   .page-content {
     flex: 2;
     background-color: var(--secondary-bg);
-    /* margin-left: 250px; Même largeur que la Sidebar */
   }
 
 /* Home.css */
@@ -177,34 +172,47 @@
 /* unsortedImages.css */
 
 .unsorted-images {
-  flex: 2;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
 .unsorted-images-header {
-  background-color: var(--third-bg);
-  height: 80px;
+  background-color: var(--secondary-bg);
+  border-bottom: 1.5px solid var(--third-bg);
+}
+
+.unsorted-images-header p {
+  padding: 30px;
+  margin: 0;
 }
 
 .unsorted-images-container {
   display: flex;
-  overflow-y: auto;
-  flex-direction: column;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  justify-content: space-evenly;
   gap: 10px;
   background-color: var(--secondary-bg);
-  height: calc(100% - 150px);
+  height: calc(100vh - 125.6px);
+  padding: 0 20px;
 }
 
 .unsorted-images-item {
-  background-color: var(--fifth-bg);
+  /* background-color: var(--fifth-bg); */
 }
 
 .unsorted-images-item img{
-  width: 200px;
+  width: auto;
   height: 200px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 1.5px solid var(--third-bg);
 }
 
 .unsorted-images-bottombar {
-  background-color: var(--third-bg);
+  background-color: var(--secondary-bg);
+  border-top: 1.5px solid var(--third-bg);
 }
 
 .unsorted-images-bottombar button{
@@ -214,5 +222,6 @@
   cursor: pointer;
   border-radius: 5px;
   transition: 0.3s;
-  background-color: var(--secondary-bg);
+  background-color: var(--third-button-bg);
+  color: white;
 }

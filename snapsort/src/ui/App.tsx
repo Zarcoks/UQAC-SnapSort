@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
+import UnsortedImages from './pages/UnsortedImages';
 import MainLayout from "./layouts/MainLayout";
 
 import './App.css'
@@ -17,6 +18,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/unsorted-images" element={<UnsortedImages />} />
         </Route>
       </Routes>
     </Router>

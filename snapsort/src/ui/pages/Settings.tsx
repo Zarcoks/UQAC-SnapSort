@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import '../styles/components.css';
 
 const Settings = () => {
-  const [directoryPath, setDirectoryPath] = useState<string>("");
-  const [nbrOfFilesLoaded, setNbrOfFilesLoaded] = useState<number>(10);
+  const [directoryPath, setDirectoryPath] = useState<string>();
+  const [nbrOfFilesLoaded, setNbrOfFilesLoaded] = useState<number>();
   const [changed, setChanged] = useState(false);
 
   // Charger les valeurs depuis Electron Store au démarrage
@@ -28,7 +28,7 @@ const Settings = () => {
 
   return (
     <div className="settings-container">
-      <div>
+      <div className="settings-header">
         <h2>Paramètres</h2>
       </div>
       

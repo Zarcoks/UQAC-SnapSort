@@ -195,9 +195,9 @@
   color: white;
 }
 
-/* images-viewer.css */
+/* image-viewer.css */
 
-.images-viewer-header {
+.image-viewer-header {
   background-color: var(--sixth-bg);
   border-bottom: 1.5px solid var(--third-bg);
   display: flex;
@@ -207,11 +207,11 @@
   font-weight: bold;
 }
 
-.images-viewer-header span {
+.image-viewer-header span {
   padding-right: 10px;
 }
 
-.images-viewer-header p {
+.image-viewer-header p {
   margin: 0;
   
   font-size: 1.2rem;
@@ -219,22 +219,22 @@
   padding-bottom: 3px;
 }
 
-.images-viewer-header i {
+.image-viewer-header i {
   padding-right: 10px;
 }
 
-.images-viewer-header i::before {
+.image-viewer-header i::before {
   font-size: 1.8rem;
   vertical-align: middle;
   cursor: pointer;
 }
 
-.images-viewer-header i:hover::before {
+.image-viewer-header i:hover::before {
   transform: scale(1.1);
   display: inline-block;
 }
 
-.images-viewer-container {
+.image-viewer-container {
   display: flex;
   flex-wrap: wrap;
   overflow-y: scroll;
@@ -245,24 +245,29 @@
   padding: 0 20px;
 }
 
-.images-viewer-item {
-  /* background-color: var(--fifth-bg); */
+.image-viewer-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 20px;
+  margin: 0;
+  padding: 0;
 }
 
-.images-viewer-item img{
+.image-viewer-item:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.image-viewer-item img{
   width: auto;
-  /* height: 200px; */
-  border-radius: 20px;
   cursor: pointer;
   border: 1.5px solid var(--third-bg);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 20px;
+  
 }
 
-.images-viewer-item img:hover {
-  transform: scale(1.05); /* Agrandissement de 5% */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Ombre portée subtile */
-  border-color: var(--third-button-bg); /* Change la couleur de la bordure au survol */
-  z-index: 10; /* Assure que l'image agrandie passe au-dessus des autres */
+.image-viewer-item img:hover {
+  border-color: var(--third-button-bg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Styles pour la vue agrandie */
@@ -285,7 +290,7 @@
   max-height: 90vh;
 }
 
-.enlarged-image {
+.enlarged-item {
   max-width: 100%;
   max-height: 90vh;
   object-fit: contain;
@@ -345,4 +350,21 @@
 
 .close-button:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+.play-button-overlay {
+  position: relative;
+  bottom: 50%;
+  pointer-events: none;
+  
+}
+
+.play-button-overlay i {
+  color: white;
+  font-size: 24px;
+  border-radius: 50%;
+  border: 3px solid white;
+  padding: 3px;
+  padding-top:7px;
+  padding-left: 4px;
 }

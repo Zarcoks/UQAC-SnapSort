@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+
 import logo from '../assets/logo.png';
 import iconAlbums from '../assets/icon_albums.png';
 import iconSettings from '../assets/icon_settings.png';
@@ -7,16 +8,7 @@ import iconUser from '../assets/icon_user.png';
 import iconUnsortedImages from '../assets/icon_unsorted_images.png';
 import iconWifi from '../assets/icon_wifi.png';
 
-interface NavBarItemProps {
-  label: string;
-  imageUrl: string;
-  redirectTo: string;
-}
-
-interface BottomItemProps {
-  imageUrl: string;
-  redirectTo: string;
-}
+import { NavBarItemProps, BottomItemProps } from '../types/interfaces';
 
 const NavBarItem: React.FC<NavBarItemProps> = ({ label, imageUrl, redirectTo }) => {
   return (

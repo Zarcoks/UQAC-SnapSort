@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import '../styles/components.css';
-import ImagesViewer from "../components/images-viewer";
+import ImagesViewer from "../components/ImageViewer";
+import { MediaFile } from "../types/interfaces";
 
 function UnsortedImages() {
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<MediaFile[]>([]);
 
   useEffect(() => {
     // Charger le chemin du dossier principal
@@ -28,10 +29,10 @@ function UnsortedImages() {
   return (
     <div className="unsorted-images">
 
-        <ImagesViewer files={files} />
+        <ImagesViewer mediaFiles={files} />
 
         <div className="unsorted-images-bottombar">
-            <button>Trier (defaut)</button>
+            <button>Trier (défaut)</button>
             <button>Trier (avancée)</button>
         </div>
     </div>

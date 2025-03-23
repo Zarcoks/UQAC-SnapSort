@@ -255,4 +255,12 @@
   border-radius: 20px;
   cursor: pointer;
   border: 1.5px solid var(--third-bg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.images-viewer-item img:hover {
+  transform: scale(1.05); /* Agrandissement de 5% */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Ombre portée subtile */
+  border-color: var(--third-button-bg); /* Change la couleur de la bordure au survol */
+  z-index: 10; /* Assure que l'image agrandie passe au-dessus des autres */
 }

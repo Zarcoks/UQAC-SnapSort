@@ -10,7 +10,7 @@ let mainWindow: BrowserWindow | null = null;
 
 app.on('ready', () => {
   const mainWindow = new BrowserWindow({
-    width: 1400,
+    width: 1340,
     height: 900,
     webPreferences: {
       nodeIntegration: false,

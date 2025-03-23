@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 import './App.css'
 import './styles/global.css'
 import './styles/themes.css'
+import "@flaticon/flaticon-uicons/css/all/all.css";
 
 function App() {
   return (

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import '../styles/components.css';
+import ImagesViewer from "../components/images-viewer";
 
 function UnsortedImages() {
   const [files, setFiles] = useState<string[]>([]);
@@ -26,20 +28,11 @@ function UnsortedImages() {
   return (
     <div className="unsorted-images">
 
-        <div className="unsorted-images-header">
-            <p></p>
-        </div>
-        
-        <div className="unsorted-images-container">
-            {files.map((file, index) => (
-                <div className="unsorted-images-item">
-                    <img key={index} src={`file://${file}`} alt={`Media ${index}`} className="media-item" />
-                </div>
-            ))}
-        </div>
+        <ImagesViewer files={files} />
 
         <div className="unsorted-images-bottombar">
-            <button>Trier</button>
+            <button>Trier (defaut)</button>
+            <button>Trier (avancée)</button>
         </div>
     </div>
   );

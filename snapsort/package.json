@@ -19,6 +19,7 @@
     "dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64"
   },
   "dependencies": {
+    "@flaticon/flaticon-uicons": "^3.3.1",
     "electron-store": "^10.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

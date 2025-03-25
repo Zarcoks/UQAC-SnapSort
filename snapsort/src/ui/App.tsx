@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import UnsortedImages from './pages/UnsortedImages';
 import MainLayout from "./layouts/MainLayout";
+import Connexion from './pages/Connexion';
 
 import './App.css'
 import './styles/global.css'
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/unsorted-images" element={<UnsortedImages />} />
+          <Route path="/connexion" element={<Connexion />} />
         </Route>
       </Routes>
     </Router>

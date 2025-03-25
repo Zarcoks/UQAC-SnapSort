@@ -47,7 +47,7 @@ const Sidebar = () => {
           <NavBarItem
             label="Connexion"
             imageUrl={iconWifi}
-            redirectTo="/login"
+            redirectTo="/connexion"
           />
         </div>
         <div className="bottom">

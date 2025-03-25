@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
+import { startHotspot } from './connexion.js';
 import { spawn } from 'child_process';
 import store from "./store.js";
 
@@ -147,5 +148,16 @@ ipcMain.handle("get-media-files", async (_, directoryPath) => {
     return { directoryPath: folderPath, files: mediaFiles };
   } catch (error) {
     return { error: `Failed to read directory: ${error}` };
+  }
+});
+
+// Connexion to the phone mobile
+
+// Activating hotspot
+ipcMain.handle("start-hotspot", async () => {
+  try {
+      return await startHotspot();
+  } catch (error) {
+      return error;
   }
 });

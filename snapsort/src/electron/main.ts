@@ -3,9 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
-import { startHotspot } from './connexion.js';
+import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey } from './connexion.js';
 import { spawn } from 'child_process';
 import store from "./store.js";
+import { get } from 'https';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -153,11 +154,32 @@ ipcMain.handle("get-media-files", async (_, directoryPath) => {
 
 // Connexion to the phone mobile
 
-// Activating hotspot
 ipcMain.handle("start-hotspot", async () => {
   try {
-      return await startHotspot();
+      // Démarrer le hotspot
+      const hotspotResult = await startHotspot();
+      console.log(hotspotResult);
+
+      // Attendre un court instant pour s'assurer que le hotspot est bien activé
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Récupérer le SSID et la clé de sécurité
+      let wifiSSID = await getSSID();
+      let wifiPassword = await getSecurityKey();
+      const wifiEncryption = "WPA"; // WPA, WPA2 ou NONE
+
+      wifiSSID = extractSSID(wifiSSID) ?? '';
+      wifiPassword = extractUserSecurityKey(wifiPassword) ?? '';
+      
+      if (wifiSSID === '' || wifiPassword === '') {
+        return { error: "Impossible de récupérer les informations du hotspot" };
+      }
+      else
+      {
+        const wifiString = `WIFI:T:${wifiEncryption};S:${wifiSSID};P:${wifiPassword};;`;
+        return { wifiString };
+      }
   } catch (error) {
-      return error;
+      return { error: "Erreur lors du démarrage du hotspot" };
   }
 });

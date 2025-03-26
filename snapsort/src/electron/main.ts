@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
-import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey } from './connexion.js';
+import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey, getPhoneIpAddress, extractIpAddress } from './connexion.js';
 import { spawn } from 'child_process';
 import store from "./store.js";
 import { get } from 'https';
@@ -181,5 +181,19 @@ ipcMain.handle("start-hotspot", async () => {
       }
   } catch (error) {
       return { error: "Erreur lors du démarrage du hotspot" };
+  }
+});
+
+// Récupérer l'adresse IP
+ipcMain.handle("get-ip", async () => {
+  try {
+    let ipAddress = await getPhoneIpAddress();
+    if (ipAddress) {
+      ipAddress = extractIpAddress(ipAddress);
+    }
+    return ipAddress; // This will be sent back to the renderer process
+  } catch (error) {
+    console.error("Error fetching IP:", error);
+    return null;
   }
 });

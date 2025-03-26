@@ -4,8 +4,9 @@ import QRCode from 'qrcode';
 
 function Connexion() {
   const [wifiString, setWifiString] = useState<string>("");
-  const [qrCode, setQrCode] = useState<string>("");  // État pour stocker l'URL du QR Code
+  const [qrCode, setQrCode] = useState<string>("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [phoneIp, setPhoneIp] = useState<string>("");
 
   const handleStartHotspot = async () => {
     const result = await (window as any).electron.startHotspot();
@@ -27,6 +28,12 @@ function Connexion() {
       console.error("Erreur lors de la génération du QR code: ", err);
     }
   };
+
+  const fetchIpAddress = async () => {
+    const result = await (window as any).electron.getIpAdress();
+    setPhoneIp(result);
+    console.log("Phone IP Address:", result);
+  }
 
   useEffect(() => {
     if (canvasRef.current && qrCode) {
@@ -64,6 +71,13 @@ function Connexion() {
             </div>
           )}
         </section>
+
+        <div className="get-ip">
+          <button onClick={fetchIpAddress} className="btn-access-point">
+            Get IP adress of the phone
+          </button>
+          <p>Phone IP Address: {phoneIp}</p>
+        </div>
         
         <section className="devices-section">
           <ul>

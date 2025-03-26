@@ -8,5 +8,6 @@ contextBridge.exposeInMainWorld('electron', {
     getSetting: (key: string) => ipcRenderer.invoke("get-setting", key),
     setSetting: (key: string, value: any) => ipcRenderer.invoke("set-setting", key, value),
     getMediaFiles: (key: string) => ipcRenderer.invoke("get-media-files", key),
-    startHotspot: () => ipcRenderer.invoke("start-hotspot")
+    startHotspot: () => ipcRenderer.invoke("start-hotspot"),
+    getIpAdress: () => ipcRenderer.invoke("get-ip")
 });

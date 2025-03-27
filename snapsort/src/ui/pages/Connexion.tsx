@@ -29,11 +29,20 @@ function Connexion() {
     }
   };
 
+  //TODO: Quand il y a plusieurs appareils connectés, afficher la liste des appareils pour la version Pro
+  //TODO: Si on a pas de version Pro, on recupere que le premier de la liste (faudrait renommer la fonction par fetchFirstDevice)
+  // Fonction pour récupérer l'adresse IP du téléphone 
   const fetchIpAddress = async () => {
     const result = await (window as any).electron.getIpAdress();
     setPhoneIp(result);
     console.log("Phone IP Address:", result);
   }
+
+  //Fonction pour récupérer la liste des appareils connectés
+  // const fetchDevices = async () => {
+  //   const result = await (window as any).electron.getDevices();
+  //   console.log("Devices:", result);
+  // }
 
   useEffect(() => {
     if (canvasRef.current && qrCode) {

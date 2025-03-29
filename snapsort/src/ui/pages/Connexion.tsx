@@ -22,12 +22,35 @@ function Connexion() {
 
   const generateQRCode = async (wifiString: string) => {
     try {
-      const qrCodeDataUrl = await QRCode.toDataURL(wifiString); // Génére l'image QR en base64
-      setQrCode(qrCodeDataUrl); // Sauvegarde le QR Code dans l'état
-    } catch (err) {
-      console.error("Erreur lors de la génération du QR code: ", err);
+      // Nettoyage du wifiString avant génération du QR Code
+      console.log("Avant nettoyage:", JSON.stringify(wifiString));
+
+      const cleanedWifiString = wifiString.trim()
+        .replace(/\r/g, "")  
+        .replace(/\n/g, "") 
+        .replace(/\s*;\s*/g, ";")  
+        .replace(/\s+/g, " ");  
+
+      console.log("Après nettoyage:", JSON.stringify(cleanedWifiString));
+
+      // Génération du QR Code avec la string nettoyée
+      const qrCodeDataUrl = await QRCode.toDataURL(cleanedWifiString, {
+        errorCorrectionLevel: 'H',  
+        width: 300,  
+        margin: 1,  
+        color: {
+          dark: '#000000', 
+          light: '#FFFFFF'  
+        }
+      });
+      setQrCode(qrCodeDataUrl);  // Met à jour l'état avec le QR Code généré
+    
+      console.log("QR Code généré:", qrCodeDataUrl);
+    } catch (error) {
+      console.error("Erreur lors de la génération du QR Code:", error);
     }
-  };
+
+  }
 
   //TODO: Quand il y a plusieurs appareils connectés, afficher la liste des appareils pour la version Pro
   //TODO: Si on a pas de version Pro, on recupere que le premier de la liste (faudrait renommer la fonction par fetchFirstDevice)
@@ -74,7 +97,7 @@ function Connexion() {
           {qrCode && (
             <div>
               <h3>Scan QR Code to connect:</h3>
-              <canvas ref={canvasRef} width={200} height={200} />
+              {qrCode && <img src={qrCode} alt="QR Code WiFi" />}
               {/* Affichage alternatif avec une balise <img> */}
               {/* <img src={qrCode} alt="QR Code" /> */}
             </div>

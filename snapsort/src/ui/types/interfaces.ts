@@ -34,6 +34,6 @@ export interface EnlargedViewProps {
     enlargedImageIndex: number | null;
     mediaFiles: MediaFile[];
     closeEnlargedView: () => void;
-    goToPrevious: (e: React.MouseEvent) => void;
-    goToNext: (e: React.MouseEvent) => void;
+    goToPrevious: (e: React.MouseEvent | KeyboardEvent) => void;
+    goToNext: (e: React.MouseEvent | KeyboardEvent) => void;
 }

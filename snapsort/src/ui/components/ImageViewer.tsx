@@ -31,7 +31,7 @@ function ImagesViewer({ mediaFiles }: MediaFiles) {
   };
   
   // Navigation vers l'image précédente
-  const goToPrevious = (e: React.MouseEvent) => {
+  const goToPrevious = (e: React.MouseEvent | KeyboardEvent) => {
     e.stopPropagation(); // Empêche la propagation qui fermerait la vue
     if (enlargedImageIndex !== null && enlargedImageIndex > 0) {
       setEnlargedImageIndex(enlargedImageIndex - 1);
@@ -39,7 +39,7 @@ function ImagesViewer({ mediaFiles }: MediaFiles) {
   };
   
   // Navigation vers l'image suivante
-  const goToNext = (e: React.MouseEvent) => {
+  const goToNext = (e: React.MouseEvent | KeyboardEvent) => {
     e.stopPropagation(); // Empêche la propagation qui fermerait la vue
     if (enlargedImageIndex !== null && enlargedImageIndex < mediaFiles.length - 1) {
       setEnlargedImageIndex(enlargedImageIndex + 1);

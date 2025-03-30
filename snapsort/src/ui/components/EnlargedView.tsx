@@ -1,4 +1,5 @@
 import { EnlargedViewProps } from '../types/interfaces';
+import { useEffect } from 'react';
 
 function EnlargedView({ enlargedImageIndex, mediaFiles, closeEnlargedView, goToPrevious, goToNext }: EnlargedViewProps) {
   if (enlargedImageIndex === null) return null;
@@ -28,6 +29,27 @@ function EnlargedView({ enlargedImageIndex, mediaFiles, closeEnlargedView, goToP
       );
     }
   };
+
+  // Ajouter un gestionnaire d'événements pour les touches fléchées
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        goToPrevious(event); // Exécuter goToPrevious si flèche gauche
+      } else if (event.key === 'ArrowRight') {
+        goToNext(event); // Exécuter goToNext si flèche droite
+      } else if (event.key === 'Escape') {
+        closeEnlargedView(); // Fermer la vue agrandie si Échap est pressé
+      }
+    };
+
+    // Ajouter l'écouteur d'événements au document
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Nettoyer l'écouteur d'événements lors du démontage du composant
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [goToPrevious, goToNext, closeEnlargedView]);
 
   return (
     <div className="enlarged-view-overlay" onClick={closeEnlargedView}>

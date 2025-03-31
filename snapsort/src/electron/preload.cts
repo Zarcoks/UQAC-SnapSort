@@ -1,5 +1,4 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { get } from 'http';
 
 contextBridge.exposeInMainWorld('electron', {
     // openDirectory: () => ipcRenderer.invoke('open-directory'),
@@ -9,5 +8,6 @@ contextBridge.exposeInMainWorld('electron', {
     setSetting: (key: string, value: any) => ipcRenderer.invoke("set-setting", key, value),
     getMediaFiles: (key: string) => ipcRenderer.invoke("get-media-files", key),
     startHotspot: () => ipcRenderer.invoke("start-hotspot"),
-    getIpAdress: () => ipcRenderer.invoke("get-ip")
+    getIpAdress: () => ipcRenderer.invoke("get-ip"),
+    getFolders: (key: string) => ipcRenderer.invoke("get-folders", key),
 });

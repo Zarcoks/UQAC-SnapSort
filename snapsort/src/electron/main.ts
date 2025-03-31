@@ -7,6 +7,7 @@ import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurity
 import { spawn } from 'child_process';
 import store from "./store.js";
 import { get } from 'https';
+import { getFolders } from './folderManager.js';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -196,4 +197,9 @@ ipcMain.handle("get-ip", async () => {
     console.error("Error fetching IP:", error);
     return null;
   }
+});
+
+// Récupérer les dossiers
+ipcMain.handle("get-folders", async (_, rootPath) => {
+  return getFolders(rootPath);
 });

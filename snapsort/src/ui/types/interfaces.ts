@@ -37,3 +37,13 @@ export interface EnlargedViewProps {
     goToPrevious: (e: React.MouseEvent | KeyboardEvent) => void;
     goToNext: (e: React.MouseEvent | KeyboardEvent) => void;
 }
+
+export interface Folder {
+    name: string;
+    path: string;
+    children: Folder[];
+}
+
+export interface FolderTreeProps {
+    handleGetMediaFiles: (path: String) => Promise<void>;
+}

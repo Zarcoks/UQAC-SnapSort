@@ -387,3 +387,54 @@
   padding: 1rem;
 }
 
+/* Albums.css */
+
+.albums {
+  display: flex;
+  margin: 0;
+}
+
+.arborescence {
+  min-width: 200px;
+  
+}
+
+/* Folder Tree */
+
+.items {
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.items-item {
+  display: flex;
+  align-items: right;
+  flex-direction: column;
+}
+
+.items-child {
+  padding-left: 20px;
+}
+
+.items-elem {
+  cursor: pointer;
+  display: flex;
+  align-items: right;
+  margin: 3px;
+}
+
+.items-folder-icon {
+  border-radius: 5px;
+}
+
+.items-folder-icon:hover {
+  background-color: var(--secondary-button-bg);
+}
+
+.items-folder-text {
+  border-radius: 5px;
+}
+
+.items-folder-text:hover {
+  background-color: var(--secondary-button-bg)
+}

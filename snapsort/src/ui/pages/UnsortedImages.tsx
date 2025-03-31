@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import '../styles/components.css';
 import ImagesViewer from "../components/ImageViewer";
-import { MediaFile } from "../types/interfaces";
+import { MediaFile } from "../types/types";
 
 function UnsortedImages() {
   const [files, setFiles] = useState<MediaFile[]>([]);

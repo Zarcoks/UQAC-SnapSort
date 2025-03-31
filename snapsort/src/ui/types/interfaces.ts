@@ -1,14 +1,8 @@
-// Définition du type pour les props
-export interface MediaFiles {
-    mediaFiles: MediaFile[];
-}
+import { MediaFile } from './types';
 
-// Types pour le média
-export interface MediaFile {
-    path: string;
-    name: string;
-    isVideo: boolean;
-    thumbnailPath: string;
+// Définition du type pour les props
+export interface ImagesViewerProps {
+    mediaFiles: MediaFile[];
 }
 
 export interface NavBarItemProps {
@@ -36,12 +30,6 @@ export interface EnlargedViewProps {
     closeEnlargedView: () => void;
     goToPrevious: (e: React.MouseEvent | KeyboardEvent) => void;
     goToNext: (e: React.MouseEvent | KeyboardEvent) => void;
-}
-
-export interface Folder {
-    name: string;
-    path: string;
-    children: Folder[];
 }
 
 export interface FolderTreeProps {

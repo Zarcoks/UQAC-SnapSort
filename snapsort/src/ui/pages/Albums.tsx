@@ -1,6 +1,6 @@
 import ImagesViewer from "../components/ImageViewer";
 import FolderTree from "../components/FolderTree";
-import { MediaFile } from "../types/interfaces";
+import { MediaFile } from "../types/types";
 import { useEffect, useState } from "react";
 import '../styles/components.css';
 

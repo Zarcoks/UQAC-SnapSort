@@ -394,6 +394,12 @@
   margin: 0;
 }
 
+.albums-content {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .arborescence {
   min-width: 200px;
   

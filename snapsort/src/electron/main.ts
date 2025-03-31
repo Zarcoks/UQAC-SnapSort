@@ -110,22 +110,32 @@ ipcMain.handle("select-directory", async () => {
 // Fonction principale pour récupérer les fichiers média
 ipcMain.handle("get-media-files", async (_, directoryPath) => {
 
-  const folderPath = directoryPath || (store.get("directoryPath") as string);
-  if (!folderPath) return { error: "No directory path set" };
+  // Deal with temp directory
+  const rootPath = store.get("directoryPath") as string;
+  if (!rootPath) return { error: "No root directory path set" };
 
-  const tempDirectoryPath = path.join(folderPath, "temp");
+  const tempDirectoryPath = path.join(rootPath, "temp");
+  if (fs.existsSync(tempDirectoryPath)) {
+    // Si le dossier existe, on le nettoie
+    cleanTempFolder(directoryPath, tempDirectoryPath);
+  }
+  else {
+    // Sinon, on le crée
+    fs.mkdirSync(tempDirectoryPath, { recursive: true });
+  }
+
 
   try {
-    cleanTempFolder(directoryPath, tempDirectoryPath); // Nettoyage du dossier temp
-
-    const files = fs.readdirSync(folderPath).filter(file => {
+    // Lire le contenu du dossier demandé
+    const files = fs.readdirSync(directoryPath).filter(file => {
       const ext = path.extname(file).toLowerCase();
       return [".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi"].includes(ext);
     });
 
+    // Si les fichiers sont des vidéos, on génère une miniature que l'on stocke dans le dossier temp
     const mediaFiles = await Promise.all(
       files.map(async file => {
-        const filePath = path.join(folderPath, file);
+        const filePath = path.join(directoryPath, file);
         const fileExt = path.extname(file).toLowerCase();
         const isVideo = [".mp4", ".mov", ".avi"].includes(fileExt);
 
@@ -147,7 +157,7 @@ ipcMain.handle("get-media-files", async (_, directoryPath) => {
       })
     );
 
-    return { directoryPath: folderPath, files: mediaFiles };
+    return { directoryPath: directoryPath, files: mediaFiles };
   } catch (error) {
     return { error: `Failed to read directory: ${error}` };
   }

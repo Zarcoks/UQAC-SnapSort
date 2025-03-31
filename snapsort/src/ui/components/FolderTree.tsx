@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Folder } from "../types/interfaces";
+import { Folder } from "../types/types";
 import '../styles/components.css';
 import { FolderTreeProps } from "../types/interfaces";
 

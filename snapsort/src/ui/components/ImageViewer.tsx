@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { MediaFiles } from '../types/interfaces';
+import { ImagesViewerProps } from '../types/interfaces';
 import RenderMediaItem from './RenderMediaItem';
 import EnlargedView from './EnlargedView';
 
-function ImagesViewer({ mediaFiles }: MediaFiles) {
+function ImagesViewer({ mediaFiles }: ImagesViewerProps) {
   // État pour suivre le niveau de zoom (par défaut 200px)
   const [imageHeight, setImageHeight] = useState<number>(200);
   

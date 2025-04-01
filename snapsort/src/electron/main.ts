@@ -4,10 +4,10 @@ import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
 import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey, getPhoneIpAddress, extractIpAddress } from './connexion.js';
-import { spawn } from 'child_process';
 import store from "./store.js";
 import { get } from 'https';
 import { getFolders } from './folderManager.js';
+import { runPipeline } from './python.js';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -54,30 +54,36 @@ app.on('ready', () => {
 
 // Execute Python Script Handler
 ipcMain.handle('run-python', async () => {
-  return new Promise((resolve, reject) => {
-    const pythonScript = getPythonScriptPath('hello.py');
 
-    const pythonProcess = spawn('python', [pythonScript]);
+  // Vérifier que le dossier "unsorted_images" existe
+  const unsortedImagesPath = path.join(app.getAppPath(), 'unsorted_images');
 
-    let output = '';
-    let error = '';
+  // Si le dossier n'existe pas, retourner "no images to sort"
+  if (!fs.existsSync(unsortedImagesPath)) {
+    return "No images to sort";
+  }
 
-    pythonProcess.stdout.on('data', (data) => {
-      output += data.toString();
-    });
+  // Vérifier que le dossier "albums" existe
+  const albumsPath = path.join(app.getAppPath(), 'albums');
+  if (!fs.existsSync(albumsPath)) {
+    // Si le dossier n'existe pas, le créer
+    fs.mkdirSync(albumsPath, { recursive: true });
+  }
 
-    pythonProcess.stderr.on('data', (data) => {
-      error += data.toString();
-    });
+  // Vérifier que le script Python existe
+  const pythonScriptPath = getPythonScriptPath('LLM_pipeline.py');
+  if (!fs.existsSync(pythonScriptPath)) {
+    return { error: "The Python script does not exist" };
+  }
 
-    pythonProcess.on('close', (code) => {
-      if (code === 0) {
-        resolve(output.trim());
-      } else {
-        reject(`Python error: ${error.trim()}`);
-      }
-    });
-  });
+  // Exécuter le script Python
+  try {
+    const output = await runPipeline({ directory: unsortedImagesPath, destination_directory: albumsPath });
+    return { output };
+  } catch (error) {
+    console.error("Error running Python script:", error);
+    return { error: "Error running Python script" };
+  }
 });
 
 // Settings Handler

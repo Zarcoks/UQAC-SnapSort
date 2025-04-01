@@ -6,6 +6,15 @@ import { MediaFile } from "../types/types";
 function UnsortedImages() {
   const [files, setFiles] = useState<MediaFile[]>([]);
 
+  const runPythonScript = async () => {
+    try {
+      const output = await (window as any).electron.runPython();
+      console.log(output);
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  };
+
   useEffect(() => {
     // Charger le chemin du dossier principal
     (window as any).electron.getSetting("directoryPath").then((path: string) => {
@@ -32,7 +41,7 @@ function UnsortedImages() {
         <ImagesViewer mediaFiles={files} />
 
         <div className="unsorted-images-bottombar">
-            <button>Trier (défaut)</button>
+            <button onClick={runPythonScript}>Trier (défaut)</button>
             <button>Trier (avancée)</button>
         </div>
     </div>

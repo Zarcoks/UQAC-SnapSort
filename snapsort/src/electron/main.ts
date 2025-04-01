@@ -52,33 +52,33 @@ app.on('ready', () => {
 //   return null;
 // });
 
-// // Execute Python Script Handler
-// ipcMain.handle('run-python', async () => {
-//   return new Promise((resolve, reject) => {
-//     const pythonScript = getPythonScriptPath('hello.py');
+// Execute Python Script Handler
+ipcMain.handle('run-python', async () => {
+  return new Promise((resolve, reject) => {
+    const pythonScript = getPythonScriptPath('hello.py');
 
-//     const pythonProcess = spawn('python', [pythonScript]);
+    const pythonProcess = spawn('python', [pythonScript]);
 
-//     let output = '';
-//     let error = '';
+    let output = '';
+    let error = '';
 
-//     pythonProcess.stdout.on('data', (data) => {
-//       output += data.toString();
-//     });
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
 
-//     pythonProcess.stderr.on('data', (data) => {
-//       error += data.toString();
-//     });
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
 
-//     pythonProcess.on('close', (code) => {
-//       if (code === 0) {
-//         resolve(output.trim());
-//       } else {
-//         reject(`Python error: ${error.trim()}`);
-//       }
-//     });
-//   });
-// });
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve(output.trim());
+      } else {
+        reject(`Python error: ${error.trim()}`);
+      }
+    });
+  });
+});
 
 // Settings Handler
 

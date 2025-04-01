@@ -6,6 +6,12 @@ export const getFolders = (folderPath: string): any[] => {
     try {
         return fs.readdirSync(folderPath).map((file) => {
             const fullPath = path.join(folderPath, file);
+
+            // Ignorer les dossiers "unsorted_images" et "temp" à la racine
+            if (folderPath === path.resolve(folderPath) && (file === 'unsorted_images' || file === 'temp')) {
+                return null; // Ignorer ce dossier
+            }
+
             if (fs.statSync(fullPath).isDirectory()) {
                 return {
                     name: file,
@@ -14,7 +20,7 @@ export const getFolders = (folderPath: string): any[] => {
                 };
             }
             return null;
-        }).filter(Boolean); // Enlève les valeurs null (fichiers)
+        }).filter(Boolean); // Enlève les valeurs null (fichiers ou dossiers ignorés)
     } catch (error) {
         console.error("Erreur lecture dossiers:", error);
         return [];

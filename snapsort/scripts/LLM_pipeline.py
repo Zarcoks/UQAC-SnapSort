@@ -13,11 +13,35 @@ import os
 import pandas as pd
 from tabulate import tabulate
 import numpy as np
-from Categories_TreeStructure import create_category_folders_from_csv
 import torch
 from transformers import CLIPProcessor, CLIPModel
 from sklearn.metrics.pairwise import cosine_similarity
 import argparse
+
+def create_category_folders_from_csv(csv_file, destination_directory):
+    df = pd.read_csv(csv_file)
+
+    if 'categories' not in df.columns:
+        print("Le CSV ne contient pas de colonne 'categories'.")
+        return
+
+    os.makedirs(destination_directory, exist_ok=True)
+
+    categories = df['categories'].dropna().unique().tolist()
+
+    for category in categories:
+        category_folder = os.path.join(destination_directory, category)
+        os.makedirs(category_folder, exist_ok=True)
+
+        images_in_category = df[df['categories'] == category]['path'].tolist()
+
+        for source_path in images_in_category:
+            if os.path.exists(source_path):
+                destination_path = os.path.join(category_folder, os.path.basename(source_path))
+                shutil.copy(source_path, destination_path)
+                print(f"Copié : {source_path} -> {destination_path}")
+            else:
+                print(f"Fichier non trouvé : {source_path}")
 
 def extract_json(response_text):
     """
@@ -457,18 +481,22 @@ def set_parser():
 
 if __name__ == "__main__":
     args = set_parser()
-    DIRECTORY = args.directory
-    MODEL = args.model
-    DESTINATION_DIRECORY = args.destination_directory
-    call = LLMCall(directory=DIRECTORY, model=MODEL)
+    directory = args.directory
+    model = args.model
+    destination_directory = args.destination_directory
+    call = LLMCall(directory=directory, model=model)
     starting_time = time.time()
 
     call.pipeline(starting_time)
 
-    if os.path.exists(DESTINATION_DIRECORY):
-        shutil.rmtree(DESTINATION_DIRECORY)
+    if os.path.exists(destination_directory):
+        shutil.rmtree(destination_directory)
 
-    os.mkdir(DESTINATION_DIRECORY)
+    os.mkdir(destination_directory)
 
-    create_category_folders_from_csv(DIRECTORY + ".csv", DESTINATION_DIRECORY)
+    create_category_folders_from_csv(directory + ".csv", destination_directory)
+
+    # remove csv file
+    if os.path.exists(directory + ".csv"):
+        os.remove(directory + ".csv")
 

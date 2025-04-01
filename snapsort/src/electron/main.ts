@@ -5,7 +5,6 @@ import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
 import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey, getPhoneIpAddress, extractIpAddress } from './connexion.js';
 import store from "./store.js";
-import { get } from 'https';
 import { getFolders } from './folderManager.js';
 import { runPipeline } from './python.js';
 
@@ -35,36 +34,21 @@ app.on('ready', () => {
   }
 });
 
-// Fonction pour ouvrir un dossier
-// ipcMain.handle('open-directory', async () => {
-//   const result = await dialog.showOpenDialog(mainWindow!, {
-//     properties: ['openDirectory'],
-//   });
-
-//   if (!result.canceled && result.filePaths.length > 0) {
-//     const folderPath = result.filePaths[0];
-//     const files = fs.readdirSync(folderPath).filter(file => {
-//       const ext = path.extname(file).toLowerCase();
-//       return ['.jpg', '.jpeg', '.png', '.gif'].includes(ext);
-//     });
-//     return { folderPath, files };
-//   }
-//   return null;
-// });
-
 // Execute Python Script Handler
 ipcMain.handle('run-python', async () => {
 
-  // Vérifier que le dossier "unsorted_images" existe
-  const unsortedImagesPath = path.join(app.getAppPath(), 'unsorted_images');
+  // Récupérer le chemin du dossier principal
+  const rootPath = store.get("directoryPath") as string;
+  if (!rootPath) return { error: "No root directory path set" };
 
+  const unsortedImagesPath = path.join(rootPath, "unsorted_images");
   // Si le dossier n'existe pas, retourner "no images to sort"
   if (!fs.existsSync(unsortedImagesPath)) {
-    return "No images to sort";
+    return unsortedImagesPath;
   }
 
   // Vérifier que le dossier "albums" existe
-  const albumsPath = path.join(app.getAppPath(), 'albums');
+  const albumsPath = path.join(rootPath, 'albums');
   if (!fs.existsSync(albumsPath)) {
     // Si le dossier n'existe pas, le créer
     fs.mkdirSync(albumsPath, { recursive: true });

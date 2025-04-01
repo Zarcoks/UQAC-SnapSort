@@ -58,6 +58,7 @@ function ImagesViewer({ mediaFiles }: ImagesViewerProps) {
       <div className="image-viewer-container">
         {mediaFiles.map((mediaFile, index) => (
           <RenderMediaItem
+            key={mediaFile.path || index} // Utilisez une clé unique (de préférence `mediaFile.path`)
             mediaFile={mediaFile}
             imageHeight={imageHeight}
             index={index}

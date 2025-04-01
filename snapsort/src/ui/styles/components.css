@@ -40,7 +40,7 @@
 
   .mid {
     display: flex;
-    height: calc(100% - 155px);
+    height: calc(100% - 293px);
     flex-direction: column;
     padding: 10px;
   }
@@ -103,7 +103,7 @@
   display: flex;
   flex-direction: column;
   min-width: 650px;
-  height: 100%;
+  height: calc(100% - 40px);
 }
 
 .settings-header {

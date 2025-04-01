@@ -7,14 +7,6 @@ import '../styles/components.css';
 const Albums = () => {
     const [files, setFiles] = useState<MediaFile[]>([]);
 
-    // const handleDirectorySelect = async () => {
-    //     const selectedPath = await (window as any).electron.selectDirectory();
-    //     if (selectedPath) {
-    //       setDirectoryPath(selectedPath);
-    //       setChanged(true);
-    //     }
-    //   };
-
     useEffect(() => {
         // Charger le chemin du dossier principal
         (window as any).electron.getSetting("directoryPath").then((path: string) => {

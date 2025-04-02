@@ -2,8 +2,8 @@ import {app, BrowserWindow, dialog, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
-import { getPreloadPath, getPythonScriptPath } from './pathResolver.js';
-import { startHotspot, getSSID, getSecurityKey, extractSSID, extractUserSecurityKey, getPhoneIpAddress, extractIpAddress } from './connexion.js';
+import { getPreloadPath, getScriptsPath } from './pathResolver.js';
+import { startHotspot, getWifiInfo, extractWifiInfo, getPhoneIpAddress, extractIpAddress } from './connexion.js';
 import store from "./store.js";
 import { getFolders } from './folderManager.js';
 import { runPipeline } from './python.js';
@@ -55,7 +55,7 @@ ipcMain.handle('run-python', async () => {
   }
 
   // Vérifier que le script Python existe
-  const pythonScriptPath = getPythonScriptPath('LLM_pipeline.py');
+  const pythonScriptPath = getScriptsPath('LLM_pipeline.py');
   if (!fs.existsSync(pythonScriptPath)) {
     return { error: "The Python script does not exist" };
   }
@@ -159,25 +159,22 @@ ipcMain.handle("start-hotspot", async () => {
   try {
       // Démarrer le hotspot
       const hotspotResult = await startHotspot();
-      console.log(hotspotResult);
 
       // Attendre un court instant pour s'assurer que le hotspot est bien activé
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Récupérer le SSID et la clé de sécurité
-      let wifiSSID = await getSSID();
-      let wifiPassword = await getSecurityKey();
-      const wifiEncryption = "WPA"; // WPA, WPA2 ou NONE
+      let data = await getWifiInfo();
 
-      wifiSSID = extractSSID(wifiSSID) ?? '';
-      wifiPassword = extractUserSecurityKey(wifiPassword) ?? '';
+      const wifiEncryption = "WPA"; // WPA, WPA2 ou NONE
+      const wifiInfo = extractWifiInfo(data);
       
-      if (wifiSSID === '' || wifiPassword === '') {
+      if (!wifiInfo.ssid || !wifiInfo.password) {
         return { error: "Impossible de récupérer les informations du hotspot" };
       }
       else
       {
-        const wifiString = `WIFI:T:${wifiEncryption};S:${wifiSSID};P:${wifiPassword};;`;
+        const wifiString = `WIFI:T:${wifiEncryption};S:${wifiInfo.ssid};P:${wifiInfo.password};;`;
         return { wifiString };
       }
   } catch (error) {

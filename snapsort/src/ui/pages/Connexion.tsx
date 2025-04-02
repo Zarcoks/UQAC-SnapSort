@@ -23,15 +23,11 @@ function Connexion() {
   const generateQRCode = async (wifiString: string) => {
     try {
       // Nettoyage du wifiString avant génération du QR Code
-      console.log("Avant nettoyage:", JSON.stringify(wifiString));
-
       const cleanedWifiString = wifiString.trim()
         .replace(/\r/g, "")  
         .replace(/\n/g, "") 
         .replace(/\s*;\s*/g, ";")  
         .replace(/\s+/g, " ");  
-
-      console.log("Après nettoyage:", JSON.stringify(cleanedWifiString));
 
       // Génération du QR Code avec la string nettoyée
       const qrCodeDataUrl = await QRCode.toDataURL(cleanedWifiString, {
@@ -44,8 +40,7 @@ function Connexion() {
         }
       });
       setQrCode(qrCodeDataUrl);  // Met à jour l'état avec le QR Code généré
-    
-      console.log("QR Code généré:", qrCodeDataUrl);
+
     } catch (error) {
       console.error("Erreur lors de la génération du QR Code:", error);
     }

@@ -10,7 +10,7 @@ export function getPreloadPath() {
   );
 }
 
-export function getPythonScriptPath(scriptName: string) {
+export function getScriptsPath(scriptName: string) {
   return path.join(
     app.getAppPath(),
     isDev() ? '.' : '..',

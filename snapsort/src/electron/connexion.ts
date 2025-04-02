@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-
+import { getScriptsPath } from './pathResolver.js';
 
 // execute command to start hotspot
 export function startHotspot(): Promise<string> {
@@ -22,117 +22,48 @@ export function startHotspot(): Promise<string> {
     });
 }
 
-
-
-// Fonction pour récupérer la langue de la console
-export function getConsoleLanguage(): Promise<string> {
+export async function getWifiInfo(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const command = `powershell -Command "(Get-UICulture).Name"`;
+    // Exécuter un fichier PowerShell séparé
+    const scriptPath = getScriptsPath('getWifiInfo.ps1'); // Chemin vers le script PowerShell
+    const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
+    
     exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(`Erreur: ${error.message}`);
-        return reject(`Erreur: ${error.message}`);
+        reject(`Erreur: ${error.message}`);
+        return;
       }
       if (stderr) {
         console.error(`Erreur PowerShell: ${stderr}`);
-        return reject(`Erreur PowerShell: ${stderr}`);
+        reject(`Erreur PowerShell: ${stderr}`);
+        return;
       }
-      const lang = stdout.trim();
-      console.log(`Langue détectée: ${lang}`);
-      resolve(lang);
+      resolve(stdout.trim());
     });
   });
 }
-// Fonction pour récupérer le SSID en fonction de la langue et en forçant UTF-8
-export async function getSSID(): Promise<string> {
-    try {
-      const lang = await getConsoleLanguage();
-      // Définir le filtre en fonction de la langue
-      let matchString;
-      if (lang.startsWith("fr")) {
-        matchString = "Nom du SSID";
-      } else if (lang.startsWith("en")) {
-        matchString = "SSID name";
-      } else {
-        matchString = "SSID name";
-      }
-      // Forcer la sortie en UTF-8 en définissant $OutputEncoding
-      const command = `powershell -Command "$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; (netsh wlan show hostednetwork) -match '${matchString}'"`;
-      return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Erreur: ${error.message}`);
-            return reject(`Erreur: ${error.message}`);
-          }
-          if (stderr) {
-            console.error(`Erreur PowerShell: ${stderr}`);
-            return reject(`Erreur PowerShell: ${stderr}`);
-          }
-          const output = stdout.trim();
-          console.log(`SSID brut: ${output}`);
-          resolve(output);
-        });
-      });
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      } else {
-        throw new Error(String(err));
-      }
-    }
-  }
-  
-  // Fonction pour récupérer la clé de sécurité en fonction de la langue et en forçant UTF-8
-  export async function getSecurityKey(): Promise<string> {
-    try {
-      const lang = await getConsoleLanguage();
-      // Définir le filtre en fonction de la langue
-      let matchString;
-      if (lang.startsWith("fr")) {
-        matchString = "Clé de sécurité utilisateur";
-      } else if (lang.startsWith("en")) {
-        matchString = "User security key";
-      } else {
-        matchString = "User security key";
-      }
-      const command = `powershell -Command "$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; (netsh wlan show hostednetwork setting=security) -match '${matchString}'"`;
-      return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Erreur: ${error.message}`);
-            return reject(`Erreur: ${error.message}`);
-          }
-          if (stderr) {
-            console.error(`Erreur PowerShell: ${stderr}`);
-            return reject(`Erreur PowerShell: ${stderr}`);
-          }
-          const output = stdout.trim();
-          console.log(`Clé de sécurité brute: ${output}`);
-          resolve(output);
-        });
-      });
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      } else {
-        throw new Error(String(err));
-      }
-    }
-  }
-// extractSSID function
-export function extractSSID(data: string): string | null {
-    // Recherche une ligne qui commence par "Nom du SSID" et capture la chaîne comprise entre « et »
-    const match = data.match(/Nom du SSID\s*:\s*«\s*([^»]+)\s*»/);
-    return match ? match[1] : null;
-  }
-  
 
-// extractSecurityKey function
-export function extractUserSecurityKey(data: string): string | null {
-    // Recherche la ligne "Clé de sécurité utilisateur" et capture tout le contenu après le deux-points
-    const match = data.match(/Clé de sécurité utilisateur\s*:\s*(.+)/);
-    return match ? match[1].trim() : null;
+export function extractWifiInfo(data: string): { ssid: string | null; password: string | null } {
+  // Initialiser les valeurs par défaut
+  let ssid: string | null = null;
+  let password: string | null = null;
+  
+  // Rechercher le SSID
+  const ssidMatch = data.match(/ssid:\s*(.+)/i);
+  if (ssidMatch && ssidMatch[1]) {
+    ssid = ssidMatch[1].trim();
   }
+  
+  // Rechercher le mot de passe
+  const passwordMatch = data.match(/password:\s*(.+)/i);
+  if (passwordMatch && passwordMatch[1]) {
+    password = passwordMatch[1].trim();
+  }
+  
+  return { ssid, password };
+}
+
   
 
 // getPhoneIpAddress function using Promise

@@ -11,8 +11,11 @@ contextBridge.exposeInMainWorld('electron', {
     getIpAdress: () => ipcRenderer.invoke("get-ip"),
     getFolders: (key: string) => ipcRenderer.invoke("get-folders", key),
     startImageTransferService: () => ipcRenderer.invoke('start-image-transfer-service'),
+    stopImageTransferService: () => ipcRenderer.invoke('stop-image-transfer-service'),
     generateTransferQRCode: (wifiString: string, serverIp: string) => 
         ipcRenderer.invoke('generate-transfer-qrcode', wifiString, serverIp),
+    getTransferServiceStatus: () => ipcRenderer.invoke('get-transfer-service-status'),
+    getWifiInfo: () => ipcRenderer.invoke('get-wifi-info'),
 
     // API pour les événements de transfert
     on: (channel: string, callback: (...args: any[]) => void) => {
@@ -20,7 +23,9 @@ contextBridge.exposeInMainWorld('electron', {
             'transfer:start',
             'transfer:progress',
             'transfer:complete',
-            'transfer:error'
+            'transfer:error',
+            'transfer:service-started',
+            'transfer:service-stopped'
         ];
 
         if (validChannels.includes(channel)) {
@@ -40,7 +45,9 @@ contextBridge.exposeInMainWorld('electron', {
             'transfer:start',
             'transfer:progress',
             'transfer:complete',
-            'transfer:error'
+            'transfer:error',
+            'transfer:service-started',
+            'transfer:service-stopped'
         ];
 
         if (validChannels.includes(channel)) {

@@ -1,4 +1,6 @@
 import {app, BrowserWindow, dialog, ipcMain } from 'electron';
+import http from 'http';
+import { startImageTransferService, stopImageTransferService, generateTransferQRCode, transferEvents } from './server.js';
 import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
@@ -11,7 +13,7 @@ import { runPipeline } from './python.js';
 let mainWindow: BrowserWindow | null = null;
 
 app.on('ready', () => {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1340,
     height: 900,
     webPreferences: {
@@ -199,4 +201,91 @@ ipcMain.handle("get-ip", async () => {
 // Récupérer les dossiers
 ipcMain.handle("get-folders", async (_, rootPath) => {
   return getFolders(rootPath);
+});
+
+// Service de transfert d'images
+let imageTransferServer: http.Server | null = null;
+let transferServiceStatus = false;
+
+// Démarrer le service de transfert d'images
+ipcMain.handle('start-image-transfer-service', async () => {
+  try {
+    // Vérifier si le service est déjà en cours d'exécution
+    if (transferServiceStatus) {
+      return { message: "Le service est déjà actif", status: true };
+    }
+    
+    // Démarrer le service
+    const serviceInfo = await startImageTransferService();
+    transferServiceStatus = true;
+    
+    // Envoyer l'événement de démarrage du service
+    mainWindow?.webContents.send('transfer:service-started', serviceInfo);
+    
+    // Configurer les redirections d'événements
+    transferEvents.on('transfer:start', (info) => {
+      mainWindow?.webContents.send('transfer:start', info);
+    });
+    
+    transferEvents.on('transfer:progress', (info) => {
+      mainWindow?.webContents.send('transfer:progress', info);
+    });
+    
+    transferEvents.on('transfer:complete', (info) => {
+      mainWindow?.webContents.send('transfer:complete', info);
+    });
+    
+    transferEvents.on('transfer:error', (info) => {
+      mainWindow?.webContents.send('transfer:error', info);
+    });
+    
+    return serviceInfo;
+  } catch (error) {
+    console.error("Erreur lors du démarrage du service de transfert:", error);
+    return { error: `Erreur: ${error}` };
+  }
+});
+
+// Arrêter le service de transfert d'images
+ipcMain.handle('stop-image-transfer-service', async () => {
+  try {
+    if (!transferServiceStatus) {
+      return { message: "Le service est déjà arrêté", status: false };
+    }
+    
+    // Arrêter le serveur si existant
+    if (imageTransferServer) {
+      await stopImageTransferService(imageTransferServer);
+      imageTransferServer = null;
+    }
+    
+    transferServiceStatus = false;
+    mainWindow?.webContents.send('transfer:service-stopped');
+    
+    return { message: "Service arrêté avec succès", status: false };
+  } catch (error) {
+    console.error("Erreur lors de l'arrêt du service:", error);
+    return { error: `Erreur: ${error}` };
+  }
+});
+
+// Générer un QR code pour le transfert d'images
+ipcMain.handle('generate-transfer-qrcode', (_, wifiString, serverIp) => {
+  return generateTransferQRCode(wifiString, serverIp);
+});
+
+// Obtenir le statut du service de transfert
+ipcMain.handle('get-transfer-service-status', () => {
+  return { active: transferServiceStatus };
+});
+
+// Récupérer les informations WiFi
+ipcMain.handle('get-wifi-info', async () => {
+  try {
+    const data = await getWifiInfo();
+    return extractWifiInfo(data);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des informations WiFi:", error);
+    return { error: `Erreur: ${error}` };
+  }
 });

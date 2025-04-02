@@ -7,7 +7,6 @@ export function startHotspot(): Promise<string> {
         const command = `powershell -Command "Start-Process powershell -Verb runAs -ArgumentList '-Command [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager, Windows.Networking.NetworkOperators, ContentType=WindowsRuntime]::CreateFromConnectionProfile([Windows.Networking.Connectivity.NetworkInformation, Windows.Networking.Connectivity, ContentType=WindowsRuntime]::GetInternetConnectionProfile()).StartTetheringAsync()'"`;
 
         exec(command, (error, stdout, stderr) => {
-
             if (error) {
                 reject(`Erreur: ${error.message}`);
                 return;
@@ -22,10 +21,66 @@ export function startHotspot(): Promise<string> {
     });
 }
 
+// Fonction pour récupérer le SSID du point d'accès
+export function getSSID(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const scriptPath = getScriptsPath('getSSID.ps1');
+    const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
+    
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Erreur lors de la récupération du SSID: ${error.message}`);
+        reject(`Erreur: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Erreur PowerShell: ${stderr}`);
+        reject(`Erreur PowerShell: ${stderr}`);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
+}
+
+// Fonction pour récupérer la clé de sécurité du point d'accès
+export function getSecurityKey(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const scriptPath = getScriptsPath('getSecurityKey.ps1');
+    const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
+    
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Erreur lors de la récupération de la clé de sécurité: ${error.message}`);
+        reject(`Erreur: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Erreur PowerShell: ${stderr}`);
+        reject(`Erreur PowerShell: ${stderr}`);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
+}
+
+// Fonction pour extraire le SSID de la sortie de getSSID
+export function extractSSID(output: string): string | null {
+  const match = output.match(/SSID:\s*(.+)/i);
+  return match && match[1] ? match[1].trim() : null;
+}
+
+// Fonction pour extraire la clé de sécurité de la sortie de getSecurityKey
+export function extractUserSecurityKey(output: string): string | null {
+  const match = output.match(/Key:\s*(.+)/i);
+  return match && match[1] ? match[1].trim() : null;
+}
+
 export async function getWifiInfo(): Promise<string> {
   return new Promise((resolve, reject) => {
     // Exécuter un fichier PowerShell séparé
-    const scriptPath = getScriptsPath('getWifiInfo.ps1'); // Chemin vers le script PowerShell
+    const scriptPath = getScriptsPath('getWifiInfo.ps1'); 
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
     
     exec(command, (error, stdout, stderr) => {
@@ -64,8 +119,6 @@ export function extractWifiInfo(data: string): { ssid: string | null; password: 
   return { ssid, password };
 }
 
-  
-
 // getPhoneIpAddress function using Promise
 export function getPhoneIpAddress(): Promise<string | null> {
   return new Promise((resolve, reject) => {
@@ -85,7 +138,6 @@ export function getPhoneIpAddress(): Promise<string | null> {
     });
   });
 }
-
 
 export function extractIpAddress(arpOutput: string): string | null {
     const interfaces = arpOutput.split(/Interface:/).slice(1); // Séparer les interfaces
@@ -107,4 +159,3 @@ export function extractIpAddress(arpOutput: string): string | null {
 
     return null; // Aucune adresse trouvée
 }
-

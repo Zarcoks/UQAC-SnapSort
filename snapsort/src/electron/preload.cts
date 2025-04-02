@@ -10,4 +10,41 @@ contextBridge.exposeInMainWorld('electron', {
     startHotspot: () => ipcRenderer.invoke("start-hotspot"),
     getIpAdress: () => ipcRenderer.invoke("get-ip"),
     getFolders: (key: string) => ipcRenderer.invoke("get-folders", key),
+    startImageTransferService: () => ipcRenderer.invoke('start-image-transfer-service'),
+    generateTransferQRCode: (wifiString: string, serverIp: string) => 
+        ipcRenderer.invoke('generate-transfer-qrcode', wifiString, serverIp),
+
+    // API pour les événements de transfert
+    on: (channel: string, callback: (...args: any[]) => void) => {
+        const validChannels: readonly string[] = [
+            'transfer:start',
+            'transfer:progress',
+            'transfer:complete',
+            'transfer:error'
+        ];
+
+        if (validChannels.includes(channel)) {
+            const subscription = (_event: any, ...args: any[]) => callback(...args);
+            ipcRenderer.on(channel, subscription);
+
+            return () => {
+                ipcRenderer.removeListener(channel, subscription);
+            };
+        }
+
+        return () => {}; // Retourne une fonction vide si le canal n'est pas valide
+    },
+
+    off: (channel: string, callback: (...args: any[]) => void) => {
+        const validChannels: readonly string[] = [
+            'transfer:start',
+            'transfer:progress',
+            'transfer:complete',
+            'transfer:error'
+        ];
+
+        if (validChannels.includes(channel)) {
+            ipcRenderer.removeListener(channel, callback);
+        }
+    }
 });

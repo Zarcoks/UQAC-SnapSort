@@ -118,15 +118,8 @@ export function startImageServer(savePath: string): Promise<string> {
                 };
                 transferEvents.emit('transfer:start', startInfo);
                 
-                // Créer le dossier pour la date
-                const formattedDate = dateString.substring(0, 8); // Prendre YYYYMMDD
-                const dateFolder = path.join(savePath, formattedDate);
-                if (!fs.existsSync(dateFolder)) {
-                  await fs.promises.mkdir(dateFolder, { recursive: true });
-                }
-                
-                // Créer le chemin complet du fichier
-                const filePath = path.join(dateFolder, fileName);
+                // Créer le chemin complet du fichier directement dans le dossier de sauvegarde principal
+                const filePath = path.join(savePath, fileName);
                 const fileStream = fs.createWriteStream(filePath);
                 
                 // Réinitialiser le compteur de bytes reçus
@@ -310,6 +303,7 @@ export function getLocalIpAddress(): Promise<string> {
     }
   });
 }
+
 export async function startImageTransferService() {
   try {
     // Start hotspot first
@@ -370,6 +364,7 @@ export async function startImageTransferService() {
     throw error;
   }
 }
+
 // Cette fonction ajoute les informations du serveur au QR code
 export function generateTransferQRCode(wifiString: string, serverIp: string): string {
   return `${wifiString}IP:${serverIp};PORT:${SERVER_PORT};`;

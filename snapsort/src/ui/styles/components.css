@@ -463,3 +463,8 @@
 .items-folder-text:hover {
   background-color: var(--secondary-button-bg)
 }
+
+.connexion-container {
+  overflow-y: scroll;
+  height: 100vh;
+}

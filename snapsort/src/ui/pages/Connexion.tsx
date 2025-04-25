@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import QRCode from 'qrcode';
+import '../styles/components.css';
 
 interface TransferInfo {
   fileName: string;
@@ -191,7 +192,7 @@ function Connexion() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen connexion-container">
       <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Centre de Connexion et Transfert</h1>
         
@@ -314,7 +315,7 @@ function Connexion() {
         {isTransferServiceActive && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             {/* Section Progression du Transfert */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            {/* <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="bg-indigo-600 py-4 px-6">
                 <h2 className="text-xl font-semibold text-white">Progression du Transfert</h2>
               </div>
@@ -385,10 +386,10 @@ function Connexion() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             
             {/* Section Appareils Connectés */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            {/* <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="bg-purple-600 py-4 px-6 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white">Appareils Connectés</h2>
                 <button 
@@ -433,7 +434,7 @@ function Connexion() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         )}
       </div>

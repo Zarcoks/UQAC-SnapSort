@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import QRCode from 'qrcode';
 import '../styles/components.css';
 
@@ -27,14 +27,14 @@ function Connexion() {
   // États pour le service de transfert
   const [isTransferServiceActive, setIsTransferServiceActive] = useState<boolean>(false);
   const [transferQrCode, setTransferQrCode] = useState<string>("");
-  const [transferInfo, setTransferInfo] = useState<TransferInfo | null>(null);
-  const [completedTransfers, setCompletedTransfers] = useState<string[]>([]);
-  const [currentTransfer, setCurrentTransfer] = useState<TransferInfo | null>(null);
+  // const [transferInfo, setTransferInfo] = useState<TransferInfo | null>(null);
+  const [, setCompletedTransfers] = useState<string[]>([]);
+  const [, setCurrentTransfer] = useState<TransferInfo | null>(null);
   const [serverIp, setServerIp] = useState<string>("");
-  const [connectedDevices, setConnectedDevices] = useState<ConnectedDevice[]>([]);
+  const [, setConnectedDevices] = useState<ConnectedDevice[]>([]);
   
   // Référence pour le canvas du QR code
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Fonction pour démarrer le hotspot
   const handleStartHotspot = async () => {
@@ -184,12 +184,12 @@ function Connexion() {
   }, [isTransferServiceActive]);
 
   // Formater la taille des fichiers
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
-    else if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-    return "0 B";
-  };
+  // const formatFileSize = (bytes: number) => {
+  //   if (bytes < 1024) return bytes + " B";
+  //   else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+  //   else if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  //   return "0 B";
+  // };
 
   return (
     <div className="bg-gray-50 min-h-screen connexion-container">

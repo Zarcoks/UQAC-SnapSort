@@ -63,6 +63,9 @@ ipcMain.handle('run-python', async () => {
   }
 
   // Exécuter le script Python
+  console.log("Running Python script...");
+  console.log("unsortedImagesPath:", unsortedImagesPath);
+  console.log("albumsPath:", albumsPath);
   try {
     const output = await runPipeline({ directory: unsortedImagesPath, destination_directory: albumsPath });
     return { output };

@@ -9,7 +9,6 @@ export const runPipeline = ({directory, destination_directory}: { directory: str
         const args = [
             pythonScript,
             '--directory', directory,
-            '--model', 'gemma3',
             '--destination_directory', destination_directory,
         ];
 

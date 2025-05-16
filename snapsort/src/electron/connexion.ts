@@ -24,7 +24,7 @@ export function startHotspot(): Promise<string> {
 // Fonction pour récupérer le SSID du point d'accès
 export function getSSID(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const scriptPath = getScriptsPath('getSSID.ps1');
+    const scriptPath = getScriptsPath('powershell/getSSID.ps1');
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
     
     exec(command, (error, stdout, stderr) => {
@@ -46,7 +46,7 @@ export function getSSID(): Promise<string> {
 // Fonction pour récupérer la clé de sécurité du point d'accès
 export function getSecurityKey(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const scriptPath = getScriptsPath('getSecurityKey.ps1');
+    const scriptPath = getScriptsPath('powershell/getSecurityKey.ps1');
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
     
     exec(command, (error, stdout, stderr) => {
@@ -80,7 +80,7 @@ export function extractUserSecurityKey(output: string): string | null {
 export async function getWifiInfo(): Promise<string> {
   return new Promise((resolve, reject) => {
     // Exécuter un fichier PowerShell séparé
-    const scriptPath = getScriptsPath('getWifiInfo.ps1'); 
+    const scriptPath = getScriptsPath('powershell/getWifiInfo.ps1'); 
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
     
     exec(command, (error, stdout, stderr) => {

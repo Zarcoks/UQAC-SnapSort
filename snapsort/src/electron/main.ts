@@ -4,11 +4,12 @@ import { startImageTransferService, stopImageTransferService, generateTransferQR
 import path from 'path';
 import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
-import { getPreloadPath, getScriptsPath } from './pathResolver.js';
+import { getPreloadPath } from './pathResolver.js';
 import { startHotspot, getWifiInfo, extractWifiInfo, getPhoneIpAddress, extractIpAddress } from './connexion.js';
 import store from "./store.js";
 import { getFolders } from './folderManager.js';
-import { runPipeline } from './python.js';
+import { runPythonFile } from './python/runMain.js';
+import { setupPythonEnv } from './python/setupPythonEnv.js';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -46,8 +47,16 @@ ipcMain.handle('run-python', async () => {
   const unsortedImagesPath = path.join(rootPath, "unsorted_images");
   // Si le dossier n'existe pas, retourner "no images to sort"
   if (!fs.existsSync(unsortedImagesPath)) {
+    console.log("No images to sort : unsorted_images folder not found");
     return unsortedImagesPath;
   }
+  // Si le dossier existe, vérifier qu'il n'est pas vide
+  const files = fs.readdirSync(unsortedImagesPath);
+  if (files.length === 0) {
+    console.log("No images to sort : unsorted_images folder is empty");
+    return unsortedImagesPath;
+  }
+  console.log("unsortedImagesPath:", unsortedImagesPath);
 
   // Vérifier que le dossier "albums" existe
   const albumsPath = path.join(rootPath, 'albums');
@@ -55,19 +64,15 @@ ipcMain.handle('run-python', async () => {
     // Si le dossier n'existe pas, le créer
     fs.mkdirSync(albumsPath, { recursive: true });
   }
+  console.log("albumsPath:", albumsPath);
 
-  // Vérifier que le script Python existe
-  const pythonScriptPath = getScriptsPath('LLM_pipeline.py');
-  if (!fs.existsSync(pythonScriptPath)) {
-    return { error: "The Python script does not exist" };
-  }
+  // Vérifier que l'environnement Python est prêt
+  await setupPythonEnv();
 
   // Exécuter le script Python
   console.log("Running Python script...");
-  console.log("unsortedImagesPath:", unsortedImagesPath);
-  console.log("albumsPath:", albumsPath);
   try {
-    const output = await runPipeline({ directory: unsortedImagesPath, destination_directory: albumsPath });
+    const output = await runPythonFile({ directory: unsortedImagesPath, destination_directory: albumsPath });
     return { output };
   } catch (error) {
     console.error("Error running Python script:", error);

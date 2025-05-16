@@ -29,3 +29,7 @@ nextSteps.txt
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Testing images
+*.png
+*.jpg

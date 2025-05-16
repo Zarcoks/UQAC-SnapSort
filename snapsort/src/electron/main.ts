@@ -38,7 +38,9 @@ app.on('ready', () => {
 });
 
 // Execute Python Script Handler
-ipcMain.handle('run-python', async () => {
+ipcMain.handle('run-python', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return { error: "No window found" };
 
   // Récupérer le chemin du dossier principal
   const rootPath = store.get("directoryPath") as string;
@@ -72,8 +74,15 @@ ipcMain.handle('run-python', async () => {
   // Exécuter le script Python
   console.log("Running Python script...");
   try {
-    const output = await runPythonFile({ directory: unsortedImagesPath, destination_directory: albumsPath });
-    return { output };
+    await runPythonFile({
+      directory: unsortedImagesPath,
+      destination_directory: albumsPath,
+      onLog: (msg) => win.webContents.send('python-log', msg),
+      onError: (msg) => win.webContents.send('python-error', msg),
+    });
+
+    win.webContents.send('python-finished');
+    return { success: true };
   } catch (error) {
     console.error("Error running Python script:", error);
     return { error: "Error running Python script" };

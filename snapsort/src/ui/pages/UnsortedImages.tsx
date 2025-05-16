@@ -33,6 +33,20 @@ function UnsortedImages() {
         });
       }
     });
+
+    // Écouter les événements du script Python
+    (window as any).electron.onPythonLog((msg: any) => {
+      console.log("Log:", msg);
+      // Ajoute à un log display
+    });
+
+    (window as any).electron.onPythonError((msg: any) => {
+      console.error("Error:", msg);
+    });
+
+    (window as any).electron.onPythonFinished(() => {
+      console.log("Python script finished");
+    });
   }, []);
 
   return (

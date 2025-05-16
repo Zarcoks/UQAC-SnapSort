@@ -2,11 +2,10 @@ import { getScriptsPath } from '../pathResolver.js';
 import path from 'path';
 
 // Directories
-export const pythonDir = getScriptsPath('python');
-export const embedDir = path.join(pythonDir, 'python-embed');
-export const venvDir = path.join(pythonDir, 'venv');
+export const pythonRootDir = getScriptsPath('python');
+export const pythonDir = path.join(pythonRootDir, 'python-3.12.10-amd64');
 
 // Files
-export const pythonScript = path.join(pythonDir, 'main.py');
-export const requirementsPath = path.join(pythonDir, 'requirements.txt');
-export const pythonEmbedPath = path.join(embedDir, 'python.exe');
+export const pythonScript = path.join(pythonRootDir, 'main.py');
+export const requirementsPath = path.join(pythonRootDir, 'requirements.txt');
+export const pythonPath = path.join(pythonDir, 'python.exe');

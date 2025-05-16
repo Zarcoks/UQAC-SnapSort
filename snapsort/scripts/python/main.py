@@ -1,6 +1,8 @@
 import shutil
 import time
 import os
+import sys
+sys.stdout.reconfigure(line_buffering=True)
 
 from functions import create_category_folders_from_csv, set_parser
 from llm_call import LLMCall

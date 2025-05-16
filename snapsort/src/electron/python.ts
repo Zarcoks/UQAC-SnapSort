@@ -1,9 +1,10 @@
+import { Console } from 'console';
 import { getScriptsPath } from './pathResolver.js';
 import { spawn } from 'child_process';
 
 export const runPipeline = ({directory, destination_directory}: { directory: string; destination_directory: string }) => {
     return new Promise((resolve, reject) => {
-        const pythonScript = getScriptsPath('LLM_pipeline.py');
+        const pythonScript = getScriptsPath('python/main.py');
 
         // Ajout des arguments à la commande spawn
         const args = [

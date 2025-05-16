@@ -33,3 +33,6 @@ nextSteps.txt
 # Testing images
 *.png
 *.jpg
+
+# python
+__pycache__/

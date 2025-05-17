@@ -9,6 +9,7 @@ function UnsortedImages() {
   const [status, SetStatus] = useState<Status>('no-loading');
 
   const runPythonScript = async () => {
+    SetStatus('loading');
     try {
       const output = await (window as any).electron.runPython();
       console.log(output);
@@ -16,6 +17,14 @@ function UnsortedImages() {
       console.log(`Error: ${error}`);
     }
   };
+
+  const handleExtendLoading = () => {
+    SetStatus('extended-loading');
+  }
+
+  const handleReduceLoading = () => {
+    SetStatus('loading');
+  }
 
   useEffect(() => {
     // Charger le chemin du dossier principal
@@ -54,12 +63,29 @@ function UnsortedImages() {
   return (
     <div className="unsorted-images">
 
-        <ImagesViewer mediaFiles={files} />
+        {status === "no-loading" && (<ImagesViewer mediaFiles={files} />)}
+        {status === "loading" && (<ImagesViewer mediaFiles={files} height={175.6}/>)}
+        {status === "extended-loading" && (<ImagesViewer mediaFiles={files} height={250.6}/>)}
 
-        <div className="unsorted-images-loading-bar">
-          <progress value="10" max="100"></progress>
-          <span>Chargement des données</span>
-        </div>
+        {status === "loading" && (
+          <div className="unsorted-images-loading-bar">
+            <i onClick={handleExtendLoading} className="fi fi-rr-angle-double-small-up"></i>
+            <div className="unsorted-images-loading-bar-progress">
+              <progress value="10" max="100"></progress>
+              <span>100 %</span>
+            </div>
+          </div>
+        )}
+
+        {status === "extended-loading" && (
+          <div className="unsorted-images-loading-bar">
+            <i onClick={handleReduceLoading} className="fi fi-rr-angle-double-small-down"></i>
+            <div className="unsorted-images-loading-bar-progress">
+              <progress value="10" max="100"></progress>
+              <span>100 %</span>
+            </div>
+          </div>
+        )}
 
         <div className="unsorted-images-bottombar">
           <button onClick={runPythonScript}>Trie automatique</button>

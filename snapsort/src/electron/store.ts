@@ -1,18 +1,7 @@
 import Store from "electron-store";
+import { SettingsSchema, GlobalVarsSchema } from "./types/interfaces.js";
 
-// Interface pour les paramètres utilisateur
-interface SettingsSchema {
-  directoryPath: string;
-  nbrOfFilesLoaded: number;
-}
-
-// Interface pour les variables globales
-interface GlobalVarsSchema {
-  AIProcessing: boolean;
-  // Ajoute ici d'autres variables globales si besoin
-}
-
-// Store pour les paramètres utilisateur
+// Store the user settings
 const store = new Store<SettingsSchema>({
   name: "settings",
   defaults: {
@@ -21,7 +10,7 @@ const store = new Store<SettingsSchema>({
   },
 });
 
-// Store pour les variables globales
+// Store global variables
 const globalStore = new Store<GlobalVarsSchema>({
   name: "global",
   defaults: {

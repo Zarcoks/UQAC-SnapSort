@@ -6,7 +6,7 @@ import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath } from './pathResolver.js';
 import { startHotspot, getWifiInfo, extractWifiInfo, getPhoneIpAddress, extractIpAddress } from './connexion.js';
-import store from "./store.js";
+import { store } from "./store.js";
 import { getFolders } from './folderManager.js';
 import { runPythonFile } from './python/runMain.js';
 import { setupPythonEnv } from './python/setupPythonEnv.js';

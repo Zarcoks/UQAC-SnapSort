@@ -4,3 +4,13 @@ export interface RunPythonOptions {
   onLog?: (data: string) => void;
   onError?: (data: string) => void;
 }
+
+export interface SettingsSchema {
+  directoryPath: string;
+  nbrOfFilesLoaded: number;
+}
+
+export interface GlobalVarsSchema {
+  AIProcessing: boolean;
+  // Ajoute ici d'autres variables globales si besoin
+}

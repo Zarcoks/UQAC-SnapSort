@@ -95,16 +95,16 @@ export function getPhoneIpAddress(): Promise<string> {
   return execPowerShell(command, "Erreur lors de la récupération de l'adresse IP du téléphone");
 }
 
-export function extractIpAddress(arpOutput: string): string | null {
+export function extractIpAddress(arpOutput: string): string {
     const interfaces = arpOutput.split(/Interface:/).slice(1); // Séparer les interfaces
     const targetInterface = interfaces.find(block => block.includes("192.168.137.")); // Trouver l'interface cible
 
-    if (!targetInterface) return null;
+    if (!targetInterface) return "";
 
     const lines = targetInterface.split("\n").map(line => line.trim()); // Séparer les lignes et nettoyer
     const startIndex = lines.findIndex(line => line.startsWith("Internet Address")); // Trouver l'en-tête
 
-    if (startIndex === -1 || startIndex + 1 >= lines.length) return null; // Vérification de validité
+    if (startIndex === -1 || startIndex + 1 >= lines.length) return ""; // Vérification de validité
 
     for (let i = startIndex + 1; i < lines.length; i++) { // Parcourir après l'en-tête
         const match = lines[i].match(/^192\.168\.137\.\d+/); // Capturer la première adresse IP valide
@@ -113,5 +113,5 @@ export function extractIpAddress(arpOutput: string): string | null {
         }
     }
 
-    return null; // Aucune adresse trouvée
+    return ""; // Aucune adresse trouvée
 }

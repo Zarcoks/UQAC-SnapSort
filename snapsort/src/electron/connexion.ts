@@ -1,102 +1,67 @@
-import { exec } from "child_process";
 import { getScriptsPath } from './pathResolver.js';
+import { execPowerShell } from './util.js';
 
-// execute command to start hotspot
+/**
+ * Start the mobile hotspot on your Windows machine using PowerShell.
+ * @description This function executes a PowerShell command to start a mobile hotspot on Windows.
+ * @returns {Promise<string>} - The output of the PowerShell command.
+ * @throws {Error} - If there is an error executing the command or if PowerShell returns an error.
+ */
 export function startHotspot(): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const command = `powershell -Command "Start-Process powershell -Verb runAs -ArgumentList '-Command [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager, Windows.Networking.NetworkOperators, ContentType=WindowsRuntime]::CreateFromConnectionProfile([Windows.Networking.Connectivity.NetworkInformation, Windows.Networking.Connectivity, ContentType=WindowsRuntime]::GetInternetConnectionProfile()).StartTetheringAsync()'"`;
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(`Erreur: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                reject(`Erreur PowerShell: ${stderr}`);
-                return;
-            }
-
-            resolve(stdout.trim());
-        });
-    });
+    const command = `powershell -Command "Start-Process powershell -Verb runAs -ArgumentList '-Command [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager, Windows.Networking.NetworkOperators, ContentType=WindowsRuntime]::CreateFromConnectionProfile([Windows.Networking.Connectivity.NetworkInformation, Windows.Networking.Connectivity, ContentType=WindowsRuntime]::GetInternetConnectionProfile()).StartTetheringAsync()'"`;
+    return execPowerShell(command, "Erreur lors du démarrage du hotspot");
 }
 
-// Fonction pour récupérer le SSID du point d'accès
+/**
+ * Get the SSID of the mobile hotspot of your Windows machine using PowerShell.
+ * @description This function executes a PowerShell command to retrieve the SSID of the mobile hotspot on Windows.
+ * @returns {Promise<string>} - The output of the PowerShell command.
+ * @throws {Error} - If there is an error executing the command or if PowerShell returns an error.
+ */
 export function getSSID(): Promise<string> {
-  return new Promise((resolve, reject) => {
     const scriptPath = getScriptsPath('powershell/getSSID.ps1');
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
-    
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Erreur lors de la récupération du SSID: ${error.message}`);
-        reject(`Erreur: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Erreur PowerShell: ${stderr}`);
-        reject(`Erreur PowerShell: ${stderr}`);
-        return;
-      }
-      resolve(stdout.trim());
-    });
-  });
+    return execPowerShell(command, "Erreur lors de la récupération du SSID");
 }
 
-// Fonction pour récupérer la clé de sécurité du point d'accès
+/**
+ * Get the security key (Wi-Fi password) of the mobile hotspot of your Windows machine using PowerShell.
+ * @description This function executes a PowerShell script to retrieve the security key (Wi-Fi password) of the mobile hotspot on Windows.
+ * @returns {Promise<string>} - The output of the PowerShell command (the security key).
+ * @throws {Error} - If there is an error executing the command or if PowerShell returns an error.
+ */
 export function getSecurityKey(): Promise<string> {
-  return new Promise((resolve, reject) => {
     const scriptPath = getScriptsPath('powershell/getSecurityKey.ps1');
     const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
-    
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Erreur lors de la récupération de la clé de sécurité: ${error.message}`);
-        reject(`Erreur: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Erreur PowerShell: ${stderr}`);
-        reject(`Erreur PowerShell: ${stderr}`);
-        return;
-      }
-      resolve(stdout.trim());
-    });
-  });
+    return execPowerShell(command, "Erreur lors de la récupération de la clé de sécurité");
 }
 
-// Fonction pour extraire le SSID de la sortie de getSSID
+/**
+ * Extract the SSID from the output of getSSID.
+ * @description This function parses the output string from the getSSID PowerShell command and extracts the SSID value.
+ * @param output - The raw output string from the PowerShell command.
+ * @returns The SSID as a string if found, otherwise null.
+ */
 export function extractSSID(output: string): string | null {
   const match = output.match(/SSID:\s*(.+)/i);
   return match && match[1] ? match[1].trim() : null;
 }
 
-// Fonction pour extraire la clé de sécurité de la sortie de getSecurityKey
+/**
+ * Extract the Wi-Fi security key from the output of getSecurityKey.
+ * @description This function parses the output string from the getSecurityKey PowerShell command and extracts the Wi-Fi password.
+ * @param output - The raw output string from the PowerShell command.
+ * @returns The security key as a string if found, otherwise null.
+ */
 export function extractUserSecurityKey(output: string): string | null {
   const match = output.match(/Key:\s*(.+)/i);
   return match && match[1] ? match[1].trim() : null;
 }
 
 export async function getWifiInfo(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Exécuter un fichier PowerShell séparé
-    const scriptPath = getScriptsPath('powershell/getWifiInfo.ps1'); 
-    const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
-    
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Erreur: ${error.message}`);
-        reject(`Erreur: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Erreur PowerShell: ${stderr}`);
-        reject(`Erreur PowerShell: ${stderr}`);
-        return;
-      }
-      resolve(stdout.trim());
-    });
-  });
+  const scriptPath = getScriptsPath('powershell/getWifiInfo.ps1'); 
+  const command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
+  return execPowerShell(command, "Erreur lors de la récupération des informations Wi-Fi");
 }
 
 export function extractWifiInfo(data: string): { ssid: string | null; password: string | null } {
@@ -119,24 +84,15 @@ export function extractWifiInfo(data: string): { ssid: string | null; password: 
   return { ssid, password };
 }
 
-// getPhoneIpAddress function using Promise
-export function getPhoneIpAddress(): Promise<string | null> {
-  return new Promise((resolve, reject) => {
-    // Execute the arp -a command to retrieve the ARP table
-    exec('arp -a', (error, stdout, stderr) => {
-      if (error) {
-        reject(`Error executing command: ${error.message}`);
-        return;
-      }
-      
-      if (stderr) {
-        reject(`Error in standard error output: ${stderr}`);
-        return;
-      }
-      
-    resolve(stdout);
-    });
-  });
+/**
+ * Get the phone's IP address connected to the Windows hotspot.
+ * @description This function executes the `arp -a` command to retrieve the ARP table and returns the output as a string.
+ * @returns {Promise<string>} - The output of the arp command (the ARP table).
+ * @throws {Error} - If there is an error executing the command.
+ */
+export function getPhoneIpAddress(): Promise<string> {
+  const command = 'arp -a';
+  return execPowerShell(command, "Erreur lors de la récupération de l'adresse IP du téléphone");
 }
 
 export function extractIpAddress(arpOutput: string): string | null {

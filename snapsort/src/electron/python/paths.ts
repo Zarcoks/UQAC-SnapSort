@@ -1,5 +1,6 @@
-import { getScriptsPath } from '../pathResolver.js';
 import path from 'path';
+
+import { getScriptsPath } from '../pathResolver.js';
 
 // Directories
 export const pythonRootDir = getScriptsPath('python');

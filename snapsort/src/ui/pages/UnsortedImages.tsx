@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import '../styles/components.css';
 import ImagesViewer from "../components/ImageViewer";
 import { MediaFile } from "../types/types";
+import { Status } from "../types/types";
 
 function UnsortedImages() {
   const [files, setFiles] = useState<MediaFile[]>([]);
+  const [status, SetStatus] = useState<Status>('no-loading');
 
   const runPythonScript = async () => {
     try {
@@ -54,9 +56,14 @@ function UnsortedImages() {
 
         <ImagesViewer mediaFiles={files} />
 
+        <div className="unsorted-images-loading-bar">
+          <progress value="10" max="100"></progress>
+          <span>Chargement des données</span>
+        </div>
+
         <div className="unsorted-images-bottombar">
-            <button onClick={runPythonScript}>Trier (défaut)</button>
-            <button>Trier (avancée)</button>
+          <button onClick={runPythonScript}>Trie automatique</button>
+          <button>Trie avancé (experimental)</button>
         </div>
     </div>
   );

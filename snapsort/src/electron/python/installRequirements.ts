@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 import { requirementsPath, pythonPath } from './paths.js';
 import { SetupPythonSchema } from '../types/interfaces.js';
@@ -17,18 +17,33 @@ function hasNvidiaGpu(): boolean {
     }
 }
 
-export async function installRequirements({ onLog, onError }: SetupPythonSchema) {
+export async function installRequirements({ onLog }: SetupPythonSchema) {
     try {
-        if (onLog) onLog('➡ Installation des dépendances...');
-        spawnSync(pythonPath, ['-m', 'pip', 'install', '-r', requirementsPath], { stdio: 'inherit' });
+        onLog('[COMMENT]: Installation des dépendances...');
+
+        // Helper to run a pip command and stream logs
+        const runPip = (args: string[]) => {
+            return new Promise<void>((resolve, reject) => {
+                const proc = spawn(pythonPath, ['-m', 'pip', ...args]);
+                proc.stdout.on('data', data => onLog(`[PROMPT]: ${data.toString()}`));
+                proc.stderr.on('data', data => onLog(`[PROMPT ERROR]: ${data.toString()}`));
+                proc.on('close', code => {
+                    if (code === 0) resolve();
+                    else reject(new Error(`pip exited with code ${code}`));
+                });
+            });
+        };
+
+        await runPip(['install', '-r', requirementsPath]);
+
         if (hasNvidiaGpu()) {
-            if (onLog) onLog('Installation de torch avec CUDA 12.6 (GPU Nvidia détecté)...');
-            spawnSync(pythonPath, ['-m', 'pip', 'install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu126'], { stdio: 'inherit' });
+            onLog('[COMMENT]: Installation de torch avec CUDA 12.6 (GPU Nvidia détecté)...');
+            await runPip(['install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu126']);
         } else {
-            if (onLog) onLog('No Nvidia GPU detected');
+            onLog('[COMMENT]: No Nvidia GPU detected');
         }
     } catch (err) {
-        console.error('❌ Erreur durant l\'installation des dépendances :', err);
+        onLog('[COMMENT ERROR]: Erreur durant l\'installation des dépendances : ' + err);
         return;
     }
 }

@@ -5,31 +5,34 @@ import unzipper from 'unzipper';
 import { pythonRootDir, pythonDir } from './paths.js';
 import { SetupPythonSchema } from '../types/interfaces.js';
 
-export async function installPython({ onLog, onError }: SetupPythonSchema) {
+export async function installPython({ onLog }: SetupPythonSchema) {
     const url = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.zip';
     const zipPath = path.join(pythonRootDir, 'python-3.12.10.zip');
 
-    if (onLog) onLog('➡ Téléchargement de Python (python-3.12.10-amd64.zip)...');
+    if (onLog) onLog('[COMMENT]: Downloading Python (python-3.12.10-amd64.zip)...');
 
     const file = fs.createWriteStream(zipPath);
     await new Promise((resolve, reject) => {
         https.get(url, (response) => {
-        response.pipe(file);
-        file.on('finish', () => {
-            file.close(resolve);
+            response.pipe(file);
+            file.on('finish', () => {
+                file.close(resolve);
+            });
+        }).on('error', (err) => {
+            onLog('[HTTP ERROR]: ' + err.message);
+            reject(err);
         });
-        }).on('error', reject);
     });
 
-    if (onLog) onLog('✅ Python téléchargé.');
-    if (onLog) onLog('➡ Extraction de Python...');
+    onLog('[COMMENT]: Python downloaded.');
+    onLog('[COMMENT]: Extracting Python...');
 
-    // Extraire dans le bon dossier
+    // Extract to the correct folder
     await fs.createReadStream(zipPath)
         .pipe(unzipper.Extract({ path: pythonDir }))
         .promise();
-    // Supprimer le zip après extraction
+    // Delete the zip after extraction
     fs.unlinkSync(zipPath);
 
-    if (onLog) onLog('✅ Python extrait.');
+    onLog('[COMMENT]: Python extracted.');
 }

@@ -5,17 +5,17 @@ import { installPython } from './installPython.js';
 import { installRequirements } from './installRequirements.js';
 import { SetupPythonSchema } from '../types/interfaces.js';
 
-export async function setupPythonEnv({ onLog, onError }: SetupPythonSchema) {
+export async function setupPythonEnv({ onLog }: SetupPythonSchema) {
 
-    // 1. Download Python if not installed in local
-    if (onLog) onLog('➡ Vérification de si python est installé...');
+    // 1. Download Python if not installed locally
+    onLog('[COMMENT]: Checking if Python is installed...');
     if (!fs.existsSync(pythonPath)) {
-        await installPython({ onLog, onError });
+        await installPython({ onLog });
     } else {
-        if (onLog) onLog('✅ Python déjà installé.');
+        onLog('[COMMENT]: Python already installed.');
     }
 
-    // 2. Install dependances from requirements.txt
-    await installRequirements({ onLog, onError });
-    if (onLog) onLog('✅ Environnement Python prêt !');
+    // 2. Install dependencies from requirements.txt
+    await installRequirements({ onLog });
+    onLog('[COMMENT]: Python environment ready!');
 }

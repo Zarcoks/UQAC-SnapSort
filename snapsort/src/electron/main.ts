@@ -42,6 +42,9 @@ ipcMain.handle('run-python', async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (!win) return { error: "No window found" };
 
+  // Define the log/error forwarding functions ONCE
+  const forwardLog = (msg: string) => win.webContents.send('log', msg);
+
   // Récupérer le chemin du dossier principal
   const rootPath = store.get("directoryPath") as string;
   if (!rootPath) return { error: "No root directory path set" };
@@ -58,7 +61,6 @@ ipcMain.handle('run-python', async (event) => {
     console.log("No images to sort : unsorted_images folder is empty");
     return unsortedImagesPath;
   }
-  console.log("unsortedImagesPath:", unsortedImagesPath);
 
   // Vérifier que le dossier "albums" existe
   const albumsPath = path.join(rootPath, 'albums');
@@ -66,22 +68,19 @@ ipcMain.handle('run-python', async (event) => {
     // Si le dossier n'existe pas, le créer
     fs.mkdirSync(albumsPath, { recursive: true });
   }
-  console.log("albumsPath:", albumsPath);
 
   // Vérifier que l'environnement Python est prêt
-  await setupPythonEnv({
-    onLog: (msg) => win.webContents.send('python-log', msg),
-    onError: (msg) => win.webContents.send('python-error', msg)
-  });
+  await setupPythonEnv({ onLog: forwardLog });
 
   // Exécuter le script Python
-  console.log("Running Python script...");
+  forwardLog("[COMMENT]: unsortedImagesPath:" + unsortedImagesPath);
+  forwardLog("[COMMENT]: albumsPath: " + albumsPath);
+  forwardLog("[COMMENT]: Running Python script...");
   try {
     await runPythonFile({
       directory: unsortedImagesPath,
       destination_directory: albumsPath,
-      onLog: (msg) => win.webContents.send('python-log', msg),
-      onError: (msg) => win.webContents.send('python-error', msg),
+      onLog: forwardLog,
     });
 
     win.webContents.send('python-finished');

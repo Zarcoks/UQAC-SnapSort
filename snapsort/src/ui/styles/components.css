@@ -242,6 +242,10 @@
   border: 1px solid var(--third-bg);
 }
 
+.unsorted-images-log-item {
+  text-align: left;
+  font-size: 0.7rem;
+}
 
 .unsorted-images-bottombar {
   background-color: var(--sixth-bg);

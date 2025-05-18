@@ -1,11 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+let logHandler: ((event: any, msg: string) => void) | null = null;
+
 contextBridge.exposeInMainWorld('electron', {
     // Python script
     runPython: () => ipcRenderer.invoke('run-python'),
-    onPythonLog: (callback: (msg: string) => void) => ipcRenderer.on('python-log', (_, msg) => callback(msg)),
-    onPythonError: (callback: (msg: string) => void) => ipcRenderer.on('python-error', (_, msg) => callback(msg)),
-    onPythonFinished: (callback: () => void) => ipcRenderer.on('python-finished', () => callback()),
+    onPythonLog: (callback: (msg: string) => void) => {
+        logHandler = (_, msg) => callback(msg);
+        ipcRenderer.on("log", logHandler);
+    },
+    removePythonLogListener: () => {
+        if (logHandler) {
+        ipcRenderer.removeListener("log", logHandler);
+        logHandler = null;
+        }
+    },
 
     // Settings
     selectDirectory: () => ipcRenderer.invoke('select-directory'),

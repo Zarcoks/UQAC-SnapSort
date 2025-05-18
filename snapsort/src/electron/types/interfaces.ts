@@ -1,13 +1,11 @@
 export interface RunPythonOptions {
   directory: string;
   destination_directory: string;
-  onLog?: (data: string) => void;
-  onError?: (data: string) => void;
+  onLog: (data: string) => void;
 }
 
 export interface SetupPythonSchema {
-  onLog?: (data: string) => void;
-  onError?: (data: string) => void;
+  onLog: (data: string) => void;
 }
 
 export interface SettingsSchema {

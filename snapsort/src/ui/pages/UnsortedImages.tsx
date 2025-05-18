@@ -45,28 +45,26 @@ function UnsortedImages() {
         });
       }
     });
-
-    (window as any).electron.onPythonError((msg: any) => {
-      console.error("Error:", msg);
-    });
-
-    (window as any).electron.onPythonFinished(() => {
-      console.log("Python script finished");
-    });
   }, []);
 
   useEffect(() => {
-    // Écouter les événements du script Python
+    // Handler pour les logs Python
     const handleLog = (msg: string) => {
+      console.log("Log:", msg);
       setLogs(prevLogs => {
         const newLogs = [...prevLogs, msg];
-        // Keep only the last 30 messages
         return newLogs.length > 30 ? newLogs.slice(newLogs.length - 30) : newLogs;
       });
     };
 
+    // Écouter les événements du script Python
     (window as any).electron.onPythonLog(handleLog);
-  }, [logs]);
+
+    // Nettoyage pour éviter les doublons
+    return () => {
+      (window as any).electron.removePythonLogListener?.(handleLog);
+    };
+  }, []);
 
   return (
     <div className="unsorted-images">
@@ -96,7 +94,7 @@ function UnsortedImages() {
             <div className="unsorted-images-log-container">
               <div className="unsorted-images-log-content">
                 {logs.map((log, index) => (
-                  <div key={index}>log : {log}</div>
+                  <div className="unsorted-images-log-item" key={index}>log : {log}</div>
                 ))}
               </div>
             </div>

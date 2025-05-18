@@ -6,7 +6,7 @@ import fs from 'fs';
 import { isDev, cleanTempFolder, generateThumbnail } from './util.js';
 import { getPreloadPath } from './pathResolver.js';
 import { startHotspot, getWifiInfo, extractWifiInfo, getPhoneIpAddress, extractIpAddress } from './connexion.js';
-import { store } from "./store.js";
+import { store, globalStore } from "./store.js";
 import { getFolders } from './folderManager.js';
 import { runPythonFile } from './python/runMain.js';
 import { setupPythonEnv } from './python/setupPythonEnv.js';
@@ -25,15 +25,15 @@ app.on('ready', () => {
     frame: true
   });
 
+  // Set global variable AIProcessing to true
+  globalStore.set("AIProcessing", false);
+
   if (isDev()) {
     mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools();
   }
   else {
     mainWindow.loadFile(path.join(app.getAppPath(), '/dist-react/index.html'));
-  }
-
-  if (isDev()) {
-    mainWindow.webContents.openDevTools();
   }
 });
 
@@ -41,6 +41,9 @@ app.on('ready', () => {
 ipcMain.handle('run-python', async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (!win) return { error: "No window found" };
+
+  // Set global variable AIProcessing to true
+  globalStore.set("AIProcessing", true);
 
   // Define the log/error forwarding functions ONCE
   const forwardLog = (msg: string) => win.webContents.send('log', msg);
@@ -76,19 +79,15 @@ ipcMain.handle('run-python', async (event) => {
   forwardLog("[COMMENT]: unsortedImagesPath:" + unsortedImagesPath);
   forwardLog("[COMMENT]: albumsPath: " + albumsPath);
   forwardLog("[COMMENT]: Running Python script...");
-  try {
-    await runPythonFile({
-      directory: unsortedImagesPath,
-      destination_directory: albumsPath,
-      onLog: forwardLog,
-    });
 
-    win.webContents.send('python-finished');
-    return { success: true };
-  } catch (error) {
-    console.error("Error running Python script:", error);
-    return { error: "Error running Python script" };
-  }
+  await runPythonFile({
+    directory: unsortedImagesPath,
+    destination_directory: albumsPath,
+    onLog: forwardLog,
+  });
+
+  // Set global variable AIProcessing to false
+  globalStore.set("AIProcessing", false);
 });
 
 // Settings Handler
@@ -172,6 +171,16 @@ ipcMain.handle("get-media-files", async (_, directoryPath) => {
   } catch (error) {
     return { error: `Failed to read directory: ${error}` };
   }
+});
+
+// Récupérer une valeur du store
+ipcMain.handle("get-global-variables", (_, key) => {
+  return globalStore.get(key);
+});
+
+// Enregistrer une valeur dans le store
+ipcMain.handle("set-global-variables", (_, key, value) => {
+  globalStore.set(key, value);
 });
 
 // Connexion to the phone mobile

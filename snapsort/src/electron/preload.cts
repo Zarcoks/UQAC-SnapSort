@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('electron', {
     },
     removePythonLogListener: () => {
         if (logHandler) {
-        ipcRenderer.removeListener("log", logHandler);
-        logHandler = null;
+            ipcRenderer.removeListener("log", logHandler);
+            logHandler = null;
         }
     },
 
@@ -23,6 +23,8 @@ contextBridge.exposeInMainWorld('electron', {
 
     // Albums and Unsorted Images
     getMediaFiles: (key: string) => ipcRenderer.invoke("get-media-files", key),
+    getGlobalVariables: (key: string) => ipcRenderer.invoke("get-global-variables", key),
+    setGlobalVariables: (key: string, value: any) => ipcRenderer.invoke("set-global-variables", key, value),
 
     // Connectivity
     startHotspot: () => ipcRenderer.invoke("start-hotspot"),

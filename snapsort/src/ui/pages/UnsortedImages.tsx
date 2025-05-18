@@ -6,11 +6,15 @@ import { Status } from "../types/types";
 
 function UnsortedImages() {
   const [files, setFiles] = useState<MediaFile[]>([]);
-  const [status, SetStatus] = useState<Status>('no-loading');
+  const [status, setStatus] = useState<Status>('no-loading');
   const [logs, setLogs] = useState<string[]>([]);
+  const [aiProcessing, setAIProcessing] = useState(false);
 
   const runPythonScript = async () => {
-    SetStatus('loading');
+    // Change the UI state to indicate that AI processing is in progress
+    setStatus('extended-loading');
+
+    // Call the Python script
     try {
       const output = await (window as any).electron.runPython();
       console.log(output);
@@ -20,14 +24,20 @@ function UnsortedImages() {
   };
 
   const handleExtendLoading = () => {
-    SetStatus('extended-loading');
+    setStatus('extended-loading');
   }
 
   const handleReduceLoading = () => {
-    SetStatus('loading');
+    setStatus('loading');
   }
 
   useEffect(() => {
+    // Charger la variable globale AIProcessing
+    (window as any).electron.getGlobalVariables("AIProcessing").then((value: boolean) => {
+      setAIProcessing(value);
+      setStatus(value ? 'loading' : 'no-loading');
+    });
+
     // Charger le chemin du dossier principal
     (window as any).electron.getSetting("directoryPath").then((path: string) => {
       
@@ -101,10 +111,39 @@ function UnsortedImages() {
           </div>
         )}
 
-        <div className="unsorted-images-bottombar">
-          <button onClick={runPythonScript}>Trie automatique</button>
-          <button>Trie avancé (experimental)</button>
-        </div>
+        {status === "no-loading" && (<div className="unsorted-images-bottombar">
+          <button
+            onClick={runPythonScript}
+            style={{
+              backgroundColor: "var(--third-button-bg)",
+              cursor: "pointer"
+            }}
+          >
+            Trie automatique</button>
+          <button
+            style={{
+              backgroundColor: "var(--third-button-bg)",
+              cursor: "pointer"
+            }}
+          >
+            Trie avancé (experimental)</button>
+        </div>)}
+        {status !== "no-loading" && (<div className="unsorted-images-bottombar">
+          <button
+            style={{
+              backgroundColor: "var(--fourth-button-bg)",
+              cursor: "not-allowed"
+            }}
+          >
+            Trie automatique</button>
+          <button
+            style={{
+              backgroundColor: "var(--fourth-button-bg)",
+              cursor: "not-allowed"
+            }}
+          >
+            Trie avancé (experimental)</button>
+        </div>)}
     </div>
   );
 }

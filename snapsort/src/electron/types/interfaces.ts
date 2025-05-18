@@ -5,6 +5,11 @@ export interface RunPythonOptions {
   onError?: (data: string) => void;
 }
 
+export interface SetupPythonSchema {
+  onLog?: (data: string) => void;
+  onError?: (data: string) => void;
+}
+
 export interface SettingsSchema {
   directoryPath: string;
   nbrOfFilesLoaded: number;

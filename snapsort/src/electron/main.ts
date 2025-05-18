@@ -69,7 +69,10 @@ ipcMain.handle('run-python', async (event) => {
   console.log("albumsPath:", albumsPath);
 
   // Vérifier que l'environnement Python est prêt
-  await setupPythonEnv();
+  await setupPythonEnv({
+    onLog: (msg) => win.webContents.send('python-log', msg),
+    onError: (msg) => win.webContents.send('python-error', msg)
+  });
 
   // Exécuter le script Python
   console.log("Running Python script...");

@@ -178,7 +178,6 @@
 }
 
 .unsorted-images-loading-bar {
-  height: 50px;
   display: flex;
   flex-direction: column;
   background-color: var(--sixth-bg);
@@ -187,6 +186,15 @@
 
 .unsorted-images-loading-bar i {
   cursor: pointer;
+}
+
+.unsorted-images-loading-bar i:hover::before {
+  background-color: var(--third-bg);
+  border-radius: 50%;}
+.unsorted-images-loading-bar p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .unsorted-images-loading-bar-progress {
@@ -216,6 +224,24 @@
   background-color: var(--third-button-bg);
   border-radius: 10px;
 }
+
+.unsorted-images-log-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unsorted-images-log-content {
+  height: 300px;
+  overflow-y: scroll;
+  background-color: var(--secondary-bg);
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  border-top-left-radius: 10px;
+  border: 1px solid var(--third-bg);
+}
+
 
 .unsorted-images-bottombar {
   background-color: var(--sixth-bg);

@@ -3,12 +3,13 @@ import fs from 'fs';
 import https from 'https';
 import unzipper from 'unzipper';
 import { pythonRootDir, pythonDir } from './paths.js';
+import { SetupPythonSchema } from '../types/interfaces.js';
 
-export async function installPython() {
+export async function installPython({ onLog, onError }: SetupPythonSchema) {
     const url = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.zip';
     const zipPath = path.join(pythonRootDir, 'python-3.12.10.zip');
 
-    console.log('➡ Téléchargement de Python (python-3.12.10-amd64.zip)...');
+    if (onLog) onLog('➡ Téléchargement de Python (python-3.12.10-amd64.zip)...');
 
     const file = fs.createWriteStream(zipPath);
     await new Promise((resolve, reject) => {
@@ -20,8 +21,8 @@ export async function installPython() {
         }).on('error', reject);
     });
 
-    console.log('✅ Python téléchargé.');
-    console.log('➡ Extraction de Python...');
+    if (onLog) onLog('✅ Python téléchargé.');
+    if (onLog) onLog('➡ Extraction de Python...');
 
     // Extraire dans le bon dossier
     await fs.createReadStream(zipPath)
@@ -30,5 +31,5 @@ export async function installPython() {
     // Supprimer le zip après extraction
     fs.unlinkSync(zipPath);
 
-    console.log('✅ Python extrait.');
+    if (onLog) onLog('✅ Python extrait.');
 }

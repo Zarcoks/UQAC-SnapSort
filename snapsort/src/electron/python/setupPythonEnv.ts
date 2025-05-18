@@ -3,18 +3,19 @@ import fs from 'fs';
 import { pythonPath } from './paths.js';
 import { installPython } from './installPython.js';
 import { installRequirements } from './installRequirements.js';
+import { SetupPythonSchema } from '../types/interfaces.js';
 
-export async function setupPythonEnv() {
+export async function setupPythonEnv({ onLog, onError }: SetupPythonSchema) {
 
     // 1. Download Python if not installed in local
-    console.log('➡ Vérification de si python est installé...');
+    if (onLog) onLog('➡ Vérification de si python est installé...');
     if (!fs.existsSync(pythonPath)) {
-        await installPython();
+        await installPython({ onLog, onError });
     } else {
-        console.log('✅ Python déjà installé.');
+        if (onLog) onLog('✅ Python déjà installé.');
     }
 
     // 2. Install dependances from requirements.txt
-    await installRequirements();
-    console.log('✅ Environnement Python prêt !');
+    await installRequirements({ onLog, onError });
+    if (onLog) onLog('✅ Environnement Python prêt !');
 }

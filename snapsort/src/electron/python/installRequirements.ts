@@ -1,6 +1,7 @@
 import { spawnSync } from 'child_process';
 
 import { requirementsPath, pythonPath } from './paths.js';
+import { SetupPythonSchema } from '../types/interfaces.js';
 
 /**
  * Check if a Nvidia GPU is detected on the system.
@@ -16,15 +17,15 @@ function hasNvidiaGpu(): boolean {
     }
 }
 
-export async function installRequirements() {
+export async function installRequirements({ onLog, onError }: SetupPythonSchema) {
     try {
-        console.log('➡ Installation des dépendances...');
+        if (onLog) onLog('➡ Installation des dépendances...');
         spawnSync(pythonPath, ['-m', 'pip', 'install', '-r', requirementsPath], { stdio: 'inherit' });
         if (hasNvidiaGpu()) {
-            console.log('Installation de torch avec CUDA 12.6 (GPU Nvidia détecté)...');
+            if (onLog) onLog('Installation de torch avec CUDA 12.6 (GPU Nvidia détecté)...');
             spawnSync(pythonPath, ['-m', 'pip', 'install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu126'], { stdio: 'inherit' });
         } else {
-            console.log('No Nvidia GPU detected');
+            if (onLog) onLog('No Nvidia GPU detected');
         }
     } catch (err) {
         console.error('❌ Erreur durant l\'installation des dépendances :', err);

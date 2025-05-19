@@ -5,3 +5,5 @@ torch
 transformers
 scikit-learn
 pandas
+opencv-python
+imagehash

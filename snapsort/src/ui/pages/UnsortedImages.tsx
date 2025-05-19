@@ -119,14 +119,14 @@ function UnsortedImages() {
               cursor: "pointer"
             }}
           >
-            Trie automatique</button>
+            Tri automatique</button>
           <button
             style={{
               backgroundColor: "var(--third-button-bg)",
               cursor: "pointer"
             }}
           >
-            Trie avancé (experimental)</button>
+            Tri avancé (experimental)</button>
         </div>)}
         {status !== "no-loading" && (<div className="unsorted-images-bottombar">
           <button
@@ -135,14 +135,14 @@ function UnsortedImages() {
               cursor: "not-allowed"
             }}
           >
-            Trie automatique</button>
+            Tri automatique</button>
           <button
             style={{
               backgroundColor: "var(--fourth-button-bg)",
               cursor: "not-allowed"
             }}
           >
-            Trie avancé (experimental)</button>
+            Tri avancé (experimental)</button>
         </div>)}
     </div>
   );

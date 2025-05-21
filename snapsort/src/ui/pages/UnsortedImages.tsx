@@ -9,6 +9,7 @@ function UnsortedImages() {
   const [status, setStatus] = useState<Status>('no-loading');
   const [logs, setLogs] = useState<string[]>([]);
   const [aiProcessing, setAIProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const runPythonScript = async () => {
     // Change the UI state to indicate that AI processing is in progress
@@ -29,6 +30,24 @@ function UnsortedImages() {
 
   const handleReduceLoading = () => {
     setStatus('loading');
+  }
+
+  const estimateProgress = (msg: string) => {
+    const match = msg.match(/Etape \[(\d+)\/(\d+)\] : \[(\d+)\/(\d+)\]/);
+
+    if (match) {
+      // Extract the numbers from the message
+      const [_, nbr1, nbr2, nbr3, nbr4] = match;
+
+      // Calculate the progress percentage
+      const gap = (1 / parseInt(nbr2)) * 100;
+      const progress1 = ((parseInt(nbr1) - 1) / parseInt(nbr2)) * 100;
+      const progress2 = (parseInt(nbr3) / parseInt(nbr4)) * gap;
+      const progress = Math.round(progress1 + progress2);
+      setProgress(progress);
+    } else {
+      console.log(`Does not match: ${msg}`);
+    }
   }
 
   useEffect(() => {
@@ -60,7 +79,10 @@ function UnsortedImages() {
   useEffect(() => {
     // Handler pour les logs Python
     const handleLog = (msg: string) => {
-      console.log("Log:", msg);
+      console.log(msg);
+      // Estimer le progrès
+      estimateProgress(msg);
+      // Store the progress in the state
       setLogs(prevLogs => {
         const newLogs = [...prevLogs, msg];
         return newLogs.length > 30 ? newLogs.slice(newLogs.length - 30) : newLogs;
@@ -87,8 +109,8 @@ function UnsortedImages() {
           <div className="unsorted-images-loading-bar">
             <i onClick={handleExtendLoading} className="fi fi-rr-angle-double-small-up"></i>
             <div className="unsorted-images-loading-bar-progress">
-              <progress value="10" max="100"></progress>
-              <span>100 %</span>
+              <progress value={progress} max="100"></progress>
+              <span>{progress} %</span>
             </div>
           </div>
         )}
@@ -98,8 +120,8 @@ function UnsortedImages() {
             <i onClick={handleReduceLoading} className="fi fi-rr-angle-double-small-down"></i>
             <p>Traitement des images en cours...</p>
             <div className="unsorted-images-loading-bar-progress">
-              <progress value="10" max="100"></progress>
-              <span>100 %</span>
+              <progress value={progress} max="100"></progress>
+              <span>{progress} %</span>
             </div>
             <div className="unsorted-images-log-container">
               <div className="unsorted-images-log-content">

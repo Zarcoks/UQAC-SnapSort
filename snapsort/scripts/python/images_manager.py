@@ -90,7 +90,7 @@ class ImageCleaner:
         for path, quality in images_with_quality:
             i += 1
             start_one = time.time()
-            print(f"Image {i}/{len(images_with_quality)}")
+            print(f"Etape [1/5] : Image [{i}/{len(images_with_quality)}]\n")
             img1 = self.read_and_resize(path)
             if img1 is None:
                 continue

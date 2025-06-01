@@ -64,11 +64,17 @@ def create_arborescence_from_csv(csv_file):
         return None
 
     for row in data.itertuples():
-
-        date_time = row.date_time.split(":")
-        year = int(date_time[0])
-        month = int(date_time[1])
-        season = get_season(month)
+        # print(f"date_time: {row.date_time} and type is {type(row.date_time)}")
+        # TEMP TODO: Gestion d'erreur lorsque la date n'est pas présente
+        if (type(row.date_time) != "str"):
+            year = 2025
+            month = 12
+            season = get_season(month)
+        else:
+            date_time = row.date_time.split(":")
+            year = int(date_time[0])
+            month = int(date_time[1])
+            season = get_season(month)
 
         latitude = row.latitude
         longitude = row.longitude

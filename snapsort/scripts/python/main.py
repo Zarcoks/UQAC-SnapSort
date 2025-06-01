@@ -18,7 +18,11 @@ if __name__ == "__main__":
     call.pipeline(starting_time)
 
     if os.path.exists(destination_directory):
-        shutil.rmtree(destination_directory)
+        try:
+            shutil.rmtree(destination_directory)
+        except:
+            print("L'arbre n'a pas pu être supprimé.")
+
 
     os.mkdir(destination_directory)
     #call.create_autres_subfolders(destination_directory)

@@ -15,21 +15,32 @@ from images_manager import ImageCleaner
 class CategoriesManager(EmbeddingsManager):
     def __init__(self, directory, allowed_extensions=None):
         super().__init__()
+        # Types de fichiers autorisés
         if allowed_extensions is None:
             allowed_extensions = {".jpg", ".jpeg", ".png", ".gif"}
         self.allowed_extensions = allowed_extensions
-        self.directory = directory
 
+        # Répertoire
+        self.directory = directory 
+
+        # Tableau des chemins d'images présent dans le répertoire
         self.image_paths = self.get_image_paths(directory)
+
         self.image_cleaner = ImageCleaner()
 
         self.dataframe_manager = DataframeCompletion(self.image_paths)
         self.df = DataframeCompletion(self.image_paths).get_dataframe()
 
+    """
+    Récupère dans un tableau le path des images d'un directory 
+    """
     def get_image_paths(self, directory):
         image_paths = [os.path.join(directory, filename) for filename in os.listdir(directory) if os.path.splitext(filename)[1].lower() in self.allowed_extensions]
         return image_paths
 
+    """
+    Définition des catégories possibles
+    """
     def get_predifined_categories(self):
         predefined_categories = ["Ville", "Plage", "Randonnée", "Sport", "Musée", "Nourriture", "Voyages", "Nature",
                                  "Neige", "Bâtiment", "Autres", "Famille et amis", "Animaux"]
@@ -51,8 +62,14 @@ class CategoriesManager(EmbeddingsManager):
 
         return en_categories, predefined_categories
 
+
+    """
+    Conversion des path en images au travers d'un tableau
+    """
     def get_cluster_images(self, image_paths):
+        # Suppression images en double et images floues
         image_paths = self.image_cleaner.clean_cluster(image_paths)
+
         if not image_paths:
             print("Aucune image retenue après nettoyage!")
             return []

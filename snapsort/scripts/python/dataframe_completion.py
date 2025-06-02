@@ -55,7 +55,11 @@ class DataframeCompletion:
     def get_dataframe(self):
         return self.df
 
+
     def save_to_csv(self, file_path="result.csv"):
+        """
+        Sauvegarder l'assignation de catégories et autres dans un csv
+        """
         try:
             self.df.to_csv(file_path, index=False)
             print(f"DataFrame sauvegardé sous {file_path}")

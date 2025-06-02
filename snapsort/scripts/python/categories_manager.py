@@ -31,17 +31,19 @@ class CategoriesManager(EmbeddingsManager):
         self.dataframe_manager = DataframeCompletion(self.image_paths)
         self.df = DataframeCompletion(self.image_paths).get_dataframe()
 
-    """
-    Récupère dans un tableau le path des images d'un directory 
-    """
+
     def get_image_paths(self, directory):
+        """
+        Récupère dans un tableau le path des images d'un directory 
+        """
         image_paths = [os.path.join(directory, filename) for filename in os.listdir(directory) if os.path.splitext(filename)[1].lower() in self.allowed_extensions]
         return image_paths
 
-    """
-    Définition des catégories possibles
-    """
+    
     def get_predifined_categories(self):
+        """
+        Définition des catégories possibles
+        """
         predefined_categories = ["Ville", "Plage", "Randonnée", "Sport", "Musée", "Nourriture", "Voyages", "Nature",
                                  "Neige", "Bâtiment", "Autres", "Famille et amis", "Animaux"]
 
@@ -63,10 +65,10 @@ class CategoriesManager(EmbeddingsManager):
         return en_categories, predefined_categories
 
 
-    """
-    Conversion des path en images au travers d'un tableau
-    """
     def get_cluster_images(self, image_paths):
+        """
+        Conversion des path en images au travers d'un tableau
+        """
         # Suppression images en double et images floues
         image_paths = self.image_cleaner.clean_cluster(image_paths)
 
@@ -88,7 +90,11 @@ class CategoriesManager(EmbeddingsManager):
 
         return cluster_images
 
+
     def best_cluster_category(self, all_embeddings, category_embeddings, predefined_categories):
+        """
+        Retourne la meilleure catégorie ???
+        """
         cluster_embeddings = np.vstack(all_embeddings)
 
         # Calcul de l'embedding moyen du cluster
@@ -122,8 +128,10 @@ class CategoriesManager(EmbeddingsManager):
 
         return best_cat, best_cat_score, diff_with_best
 
+
     def pipeline_categories_embedding_with_clusters(self, threshold=0.1, batch_size=10, predefined_categories=None):
         """
+        Déduction et attribution d'une catégorie à chaque image, mis à jour dans le pré-csv
         Attribue des catégories en utilisant les clusters comme unité de base.
         Toutes les images d'un même cluster reçoivent la même catégorie.
         """
@@ -202,7 +210,11 @@ class CategoriesManager(EmbeddingsManager):
 
         return self.df
     
+
     def create_autres_subfolders(self, target_directory):
+        """
+        Création des sous dossiers en fonction d'une liste de catégories dans un dossier cible 
+        """
         mask = self.df["categories"].notna() & self.df["categories"].astype(str).str.startswith("Autres/")
         autres_categories = self.df[mask]["categories"].unique()
         
